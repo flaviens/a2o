@@ -170,7 +170,7 @@ module iuq_uc_cplbuffer(
                         write_ptr_l2;
 
    generate
-   begin : gen_buff
+
      genvar  i;
      for (i = 0; i < buffer_depth; i = i + 1)
      begin : buff_loop
@@ -183,8 +183,8 @@ module iuq_uc_cplbuffer(
                                                 xer_l2[i];
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    always @ (*)
    begin : read_mux
@@ -239,7 +239,7 @@ module iuq_uc_cplbuffer(
    );
 
    generate
-   begin
+
      genvar  i;
      for (i = 0; i < buffer_depth; i = i + 1)
      begin : gen_b
@@ -281,8 +281,8 @@ module iuq_uc_cplbuffer(
           .dout(xer_l2[i])
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(buffer_depth_log), .INIT(0)) read_ptr_latch(
       .vd(vdd),

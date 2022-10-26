@@ -270,7 +270,7 @@ assign write_enable_CD = wr_act[1] & wr_way[1];
 
 // Read/Write Port Address Generate
 generate
-begin
+
   genvar  t;
   for (t = 0; t < ramb_base_addr; t = t + 1)
   begin : rambAddrCalc
@@ -285,7 +285,7 @@ begin
       assign wr_addr1[t] = wr_addr[t - (ramb_base_addr - addressbus_width)];
     end
   end
-end
+
 endgenerate
 
 // Writing on PortA
@@ -297,7 +297,7 @@ assign data_out_d = {arrA_bit0_out_q, ramb_data_p1_outA[1:34], ramb_data_p1_outB
 assign data_out   = data_out_q;
 
 generate
-   begin : arr_bit0
+
       genvar                                    i;
       for (i = 0; i <= addressable_ports - 1; i = i + 1)
         begin : arr_bit0
@@ -309,7 +309,7 @@ generate
            assign arrC_bit0_d[i] = (arrC_bit0_wen[i] == 1'b1) ? array_wr_data[0] :
            	                                                   arrC_bit0_q[i];
         end
-   end
+   
 endgenerate
 
 always @(*)

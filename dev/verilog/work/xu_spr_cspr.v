@@ -1061,7 +1061,7 @@ assign power_savings_en    = ^spr_ccr0_pme &       // Power Management Enabled
 // WAIT[WC](0) = Resume on Imp. Specific
 // WAIT[WC](1) = Resume on no reservation
 generate
-   begin : pm_wake_up_gen
+
       genvar                                t;
       for (t=0;t<=`THREADS-1;t=t+1)
       begin : thread
@@ -1103,8 +1103,8 @@ generate
 
          assign ex2_xucr0_flush[t]  = ex2_is_mtspr_q & ex2_xucr0_wdec;
       end
-   end
-   endgenerate
+   
+endgenerate
 
    assign cspr_tspr_sleep_mask   = ~power_savings_on_q;
 
@@ -1182,7 +1182,7 @@ assign perf_event_en_d  = ( tspr_msr_pr &                {`THREADS{pc_xu_event_c
 wire [0:16*`THREADS-1] perf_events;
 wire [0:0] core_event;
    generate
-   begin : perf_count
+
       genvar                                t;
       for (t = 0; t <= `THREADS - 1; t = t + 1)
       begin : thread
@@ -1208,8 +1208,8 @@ wire [0:0] core_event;
             .vd(vdd),.gd(gnd));
 
       end
-   end
-   endgenerate
+   
+endgenerate
    assign xu_event_bus_out  = perf_event_bus_q;
    assign spr_xesr1         = xesr1_q;
    assign spr_xesr2         = xesr2_q;
@@ -1382,7 +1382,7 @@ wire [0:0] core_event;
    assign cspr_tspr_dbell_pirtag = lq_xu_dbell_pirtag_q;
 
    generate
-      begin : dbell
+
          genvar                                t;
          for (t=0;t<=`THREADS-1;t=t+1)
          begin : thread
@@ -1402,8 +1402,8 @@ wire [0:0] core_event;
             assign clr_gcdbell[t]      = ex3_spr_we & ex3_tid[t] & ex3_is_msgclr_q & (ex3_spr_wd[32:36] == 5'b00011);
             assign clr_gmcdbell[t]     = ex3_spr_we & ex3_tid[t] & ex3_is_msgclr_q & (ex3_spr_wd[32:36] == 5'b00100);
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign dbell_present_d     = set_dbell    | (dbell_present_q      & ~(clr_dbell     | cpl_dbell_taken_q));
    assign cdbell_present_d    = set_cdbell   | (cdbell_present_q     & ~(clr_cdbell    | cpl_cdbell_taken_q));

@@ -483,7 +483,7 @@ module iuq_ic_select(
   `endif
 
    generate
-   begin : xhdl1
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_prefetch
@@ -502,8 +502,8 @@ module iuq_ic_select(
        assign prefetch_addr_outside_range[i] = bp_ic_redirect_ifar[i][46:52] != iu0_prefetch_ifar_l2[i][46:52];
        assign flush_prefetch[i] = cp_flush_l2[i] | br_iu_redirect_l2[i] | (bp_ic_iu4_redirect[i] & prefetch_addr_outside_range[i]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign prefetch_ready = iu0_need_prefetch_l2 & icm_ics_prefetch_sm_idle & (~hold_prefetch);
 
@@ -521,7 +521,7 @@ module iuq_ic_select(
    assign back_inv_addr_act = an_ac_back_inv_l2 & an_ac_back_inv_target_l2;
 
    generate
-   begin
+
      if (`THREADS == 1)
      begin : gen_icbi_val_t1
        assign lq_iu_icbi_val_d[0] = lq_iu_icbi_val[0] | (lq_iu_icbi_val_l2[0] & an_ac_back_inv_l2 & an_ac_back_inv_target_l2);
@@ -545,8 +545,8 @@ module iuq_ic_select(
      begin : gen_icbi_addr
        assign lq_iu_icbi_addr_d[i] = lq_iu_icbi_addr;
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu_lq_icbi_complete = {`THREADS{~(an_ac_back_inv_l2 & an_ac_back_inv_target_l2)}} & lq_iu_icbi_val_l2[0:`THREADS - 1];
 
@@ -789,7 +789,7 @@ module iuq_ic_select(
    end   // iu0_ifar_proc
 
    generate
-   begin : xhdl4
+
      genvar  t;
      for (t = 0; t < `THREADS; t = t + 1)
      begin : thread_iu0_ifar_mask
@@ -806,8 +806,8 @@ module iuq_ic_select(
          end
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign toggle_flip = icd_ics_iu2_wrong_ra_flush & (~ierat_iu_iu2_flush_req) & (~iu3_flush);
    assign iu0_flip_index51_d = (  toggle_flip  & (~iu0_flip_index51_l2)) |
@@ -819,7 +819,7 @@ module iuq_ic_select(
    // Keep 42:51 to compare, and flush if cp or br flush
 
    generate
-   begin : xhdl5
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : stored_erat_gen
@@ -848,8 +848,8 @@ module iuq_ic_select(
        assign stored_erat_valid_d[i] = (~spr_ic_ierat_byp_dis) &
                ((iu0_read_erat[i] & (~iu0_flush[i])) | (stored_erat_valid_l2[i] & (~clear_erat_valid[i])));
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign ics_icd_iu0_read_erat = |(iu0_read_erat);
 
@@ -858,7 +858,7 @@ module iuq_ic_select(
    //---------------------------------------------------------------------
    // ???? Do I want to split up threaded/non-threaded signals?
    generate
-   begin : xhdl6
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : hold_t
@@ -878,8 +878,8 @@ module iuq_ic_select(
      begin : gen_need_fetch_reduce
        assign need_fetch_reduce[i] = |(need_fetch[i]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu0_erat_valid = |(need_fetch_reduce & (~hold_thread)) | (|(prefetch_ready));
    assign iu0_erat_tid = iu0_tid | next_prefetch;
@@ -888,7 +888,7 @@ module iuq_ic_select(
    assign iu_ierat_iu0_prefetch = |(prefetch_ready) & (~(|(need_fetch_reduce & (~hold_thread))));
 
    generate
-   begin : xhdl8
+
      genvar  i;
      for (i = 0; i < 52; i = i + 1)
      begin : ierat_ifar
@@ -897,8 +897,8 @@ module iuq_ic_select(
        if (i >= 62 - `EFF_IFAR_ARCH)
          assign iu_ierat_iu0_ifar[i] = iu0_ifar[i];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign next_fetch_nonspec_d = (~cp_flush) &
        (cp_flush_nonspec_l2 | (next_fetch_nonspec_l2 & (~iu0_tid)) |
@@ -949,7 +949,7 @@ module iuq_ic_select(
    assign ics_icd_iu0_tid = iu0_tid | next_prefetch;
 
    generate
-   begin
+
      if (`THREADS == 1)
      begin : gen_bp_iu0_val_t0
        assign ic_bp_iu0_val[0] = iu0_tid[0] | icm_ics_iu0_preload_val[0];
@@ -960,15 +960,15 @@ module iuq_ic_select(
        assign ic_bp_iu0_val[0] = (iu0_tid[0] & (~icm_ics_iu0_preload_val[`THREADS - 1])) | icm_ics_iu0_preload_val[0];
        assign ic_bp_iu0_val[`THREADS - 1] = (iu0_tid[`THREADS - 1] & (~icm_ics_iu0_preload_val[0])) | icm_ics_iu0_preload_val[`THREADS - 1];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign ic_bp_iu0_ifar = (|(icm_ics_iu0_preload_val) == 1'b1) ? icm_ics_iu0_preload_ifar[50:59] :
                            (iu0_tid[0] == 1'b1)                 ? iu0_ifar_l2[0][50:59] :
                                                                   iu0_ifar_l2[`THREADS - 1][50:59];
 
    generate
-   begin
+
      if (`EFF_IFAR_ARCH > (`REAL_IFAR_WIDTH-2))
      begin : iu0_ifar_gen0
 
@@ -993,8 +993,8 @@ module iuq_ic_select(
                          ({ ({(`EFF_IFAR_ARCH-4){next_prefetch[0]}} & {iu0_ifar_l2[0][62-`EFF_IFAR_ARCH:62-`EFF_IFAR_WIDTH-1], iu0_prefetch_ifar_l2[0]}), 4'b0000}) |
                          ({ ({(`EFF_IFAR_ARCH-4){next_prefetch[`THREADS-1]}} & {iu0_ifar_l2[`THREADS-1][62-`EFF_IFAR_ARCH:62-`EFF_IFAR_WIDTH-1], iu0_prefetch_ifar_l2[`THREADS-1]}), 4'b0000});
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign ics_icd_iu0_ifar = iu0_ifar;
    assign ics_icd_iu0_index51 = ( ((~(back_inv_l2 | spr_idir_read_l2)) & iu0_tid[0]) & (iu0_ifar_l2[0][51] ^ iu0_flip_index51_l2[0])) |
@@ -1024,7 +1024,7 @@ module iuq_ic_select(
    //---------------------------------------------------------------------
 
    generate
-   begin : xhdl9
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : perf
@@ -1040,8 +1040,8 @@ module iuq_ic_select(
        assign perf_event_d[i][7] = bp_ic_iu4_redirect[i];
        assign perf_event_d[i][8] = uc_iu4_flush[i];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign ic_perf_t0_event = perf_event_l2[0];
  `ifndef THREADS1
@@ -1148,7 +1148,7 @@ module iuq_ic_select(
    );
 
    generate
-   begin
+
      if (`THREADS == 1)
      begin : gen_oldest_t1
         assign oldest_prefetch_l2 = oldest_prefetch_d & 1'b0;
@@ -1175,8 +1175,8 @@ module iuq_ic_select(
           .dout(oldest_prefetch_l2)
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0)) iu0_need_prefetch_latch(
       .vd(vdd),
@@ -1198,7 +1198,7 @@ module iuq_ic_select(
    );
 
    generate
-   begin : xhdl10
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : t
@@ -1221,8 +1221,8 @@ module iuq_ic_select(
           .dout(iu0_prefetch_ifar_l2[i])
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH((`THREADS*`THREADS-1+1)), .INIT(0)) lq_iu_icbi_val_latch(
       .vd(vdd),
@@ -1244,7 +1244,7 @@ module iuq_ic_select(
    );
 
    generate
-   begin : xhdl11
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : t
@@ -1267,8 +1267,8 @@ module iuq_ic_select(
           .dout(lq_iu_icbi_addr_l2[i])
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmlatch_p #(.INIT(0)) back_inv_latch(
       .vd(vdd),
@@ -1499,7 +1499,7 @@ module iuq_ic_select(
    );
 
    generate
-   begin
+
      if (`THREADS == 1)
      begin : gen_last_tid_t1
         assign iu0_last_tid_sent_l2 = 1'b0 & iu0_last_tid_sent_d;
@@ -1526,11 +1526,11 @@ module iuq_ic_select(
           .dout(iu0_last_tid_sent_l2)
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    generate
-   begin : xhdl13
+
      genvar  t;
      for (t = 0; t < `THREADS; t = t + 1)
      begin : th
@@ -1557,12 +1557,12 @@ module iuq_ic_select(
          );
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    // IU0
    generate
-   begin : xhdl14
+
      genvar  t;
      for (t = 0; t < `THREADS; t = t + 1)
      begin : th
@@ -1609,11 +1609,11 @@ module iuq_ic_select(
            );
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    generate
-   begin : xhdl15
+
      if (`INCLUDE_IERAT_BYPASS == 0)
      begin : gen0
        genvar  i;
@@ -1670,8 +1670,8 @@ module iuq_ic_select(
         .din(stored_erat_valid_d),
         .dout(stored_erat_valid_l2)
       );
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0)) mm_hold_req_latch(
       .vd(vdd),
@@ -1750,7 +1750,7 @@ module iuq_ic_select(
     );
 
    generate
-   begin : xhdl17
+
       genvar  i;
       for (i = 0; i < `THREADS; i = i + 1)
       begin : t
@@ -1773,8 +1773,8 @@ module iuq_ic_select(
            .dout(cp_flush_ifar_l2[i])
         );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0)) cp_flush_2ucode_latch(
       .vd(vdd),
@@ -1929,7 +1929,7 @@ module iuq_ic_select(
    );
 
    generate
-   begin : xhdl18
+
       genvar  i;
       for (i = 0; i < `THREADS; i = i + 1)
       begin : t
@@ -1952,8 +1952,8 @@ module iuq_ic_select(
            .dout(perf_event_l2[i])
         );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    //---------------------------------------------------------------------
    // Scan

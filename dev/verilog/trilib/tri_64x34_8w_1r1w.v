@@ -237,7 +237,8 @@ wire [0:35]                         tidn;
 wire [0:scan_right]                 siv;
 wire [0:scan_right]                 sov;
 
-generate begin
+generate
+
 
   assign tiup = 1'b1;
   assign tidn = 36'b0;
@@ -294,7 +295,7 @@ generate begin
     assign write_enable_way[numWays] = {4{write_enable[numWays/2] & way[numWays]}};
   end
 
-end
+
 endgenerate
 
 // Writing on PortA

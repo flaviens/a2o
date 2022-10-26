@@ -2319,7 +2319,7 @@ assign irpt_taken_async =
                     ({19{cp3_axu_excvec_val}} & axu_db_mask);
 
    generate
-     begin : xhdl0
+
        genvar i;
        for (i = 0; i <= (19 - 1); i = i + 1)
        begin : cp3_db_mask
@@ -2335,9 +2335,8 @@ assign irpt_taken_async =
          begin : R2
            assign cp3_db_events_masked[i] = db_mask[i] & cp3_db_events[i];
          end
-       end
-     end
-   endgenerate
+       end       
+endgenerate
 
    assign cp3_db_int_events_val = dbg_int_en & cp3_db_val & |{cp3_db_events_masked[0],(cp3_db_events_masked[1] & ~cp3_icmp_block),cp3_db_events_masked[2:18]};
    assign cp3_db_events_masked_reduced = cp3_db_int_events_val;

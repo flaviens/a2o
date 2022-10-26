@@ -588,7 +588,7 @@ module lq_pfetch(
    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
    generate
-      begin : xhdl0
+
          genvar                                    tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
            begin : sprThrd
@@ -596,8 +596,8 @@ module lq_pfetch(
                                          spr_pf_spr_dscr_dpfd[tid * 3:(tid * 3) + 2]};
               assign pfetch_dis_thrd[tid] = pf_dscr_reg[tid][58] | (pf_dscr_reg[tid][61:62] == 2'b00);
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    always @(*)
@@ -939,14 +939,14 @@ module lq_pfetch(
    assign pf_iar_i0_wen[1] = new_itag_i0_val & (pf_iar_tbl_val_q[0:1] == 2'b10);
 
    generate
-      begin : xhdl1
+
          genvar                                    i;
          for (i = 2; i <= `LDSTQ_ENTRIES - 1; i = i + 1)
            begin : pf_iar_i0_wen_gen
               assign pf_iar_i0_wen[i] = new_itag_i0_val & &(pf_iar_tbl_val_q[0:i - 1]) & (pf_iar_tbl_val_q[i] == 1'b0);
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign pf_iar_val_for_i1 = pf_iar_tbl_val_q | pf_iar_i0_wen;
 
@@ -954,14 +954,14 @@ module lq_pfetch(
    assign pf_iar_i1_wen[1] = new_itag_i1_val & (pf_iar_val_for_i1[0:1] == 2'b10);
 
    generate
-      begin : xhdl2
+
          genvar                                    i;
          for (i = 2; i <= `LDSTQ_ENTRIES - 1; i = i + 1)
            begin : pf_iar_i1_wen_gen
               assign pf_iar_i1_wen[i] = new_itag_i1_val & &(pf_iar_val_for_i1[0:i - 1]) & (pf_iar_val_for_i1[i] == 1'b0);
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // latch itag report from odq
 
@@ -1026,7 +1026,7 @@ module lq_pfetch(
    );
 
    generate
-      begin : xhdl3
+
          genvar                                    i;
          for (i = 0; i <= `LDSTQ_ENTRIES - 1; i = i + 1)
            begin : done_itag_match_gen
@@ -1034,11 +1034,11 @@ module lq_pfetch(
                                            |(odq_report_tid_q & pf_tid_tbl_q[i]) &
                                            odq_resolved_q & pf_iar_tbl_val_q[i];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl4
+
          genvar                                    i;
          for (i = 0; i <= `LDSTQ_ENTRIES - 1; i = i + 1)
            begin : pf_iar_table
@@ -1118,8 +1118,8 @@ module lq_pfetch(
                  .dout(pf_tid_tbl_q[i])
               );
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
     tri_rlmreg_p #(.WIDTH(`LDSTQ_ENTRIES), .INIT(0)) latch_pf_iar_tbl_val(
@@ -1146,7 +1146,7 @@ module lq_pfetch(
    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
    generate
-      begin : xhdl5
+
          genvar                                    i;
          for (i = 0; i <= `LDSTQ_ENTRIES - 1; i = i + 1)
            begin : new_itag_match_gen
@@ -1154,8 +1154,8 @@ module lq_pfetch(
                                          |(dcc_pf_ex5_thrd_id & pf_tid_tbl_q[i]) &
                                          pf_iar_tbl_val_q[i];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    always @(*)
      begin: ex5_iar_proc
@@ -2447,7 +2447,7 @@ module lq_pfetch(
                                                      (~old_rpt_lru);
 
    generate
-      begin : xhdl6
+
          genvar                                    i;
          for (i = 0; i <= 31; i = i + 1)
            begin : rpt_lru_gen
@@ -2455,8 +2455,8 @@ module lq_pfetch(
               assign rpt_lru_d[i] = ((pf2_iar_q[57:61] == iDummy)) ? new_rpt_lru :
                                                                      rpt_lru_q[i];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign rpt_wen[0:1] = |(pf2_rpt_pe_q)                        ? pf2_rpt_pe_q :
                          ((pf2_valid & (~new_rpt_lru)) == 1'b1) ? 2'b01 :
@@ -2503,7 +2503,7 @@ module lq_pfetch(
    assign pf1_new_data_ea = pf1_data_ea_q + ({ {59-21-1-(64-(2**`GPR_WIDTH_ENC))+1{pf1_rpt_stride_q[0]}}, pf1_rpt_stride_q });
 
    generate
-      begin : xhdl7
+
          genvar                                    i;
          for (i = 0; i <= `PFETCH_Q_SIZE - 1; i = i + 1)
            begin : pfq_gen
@@ -2607,8 +2607,8 @@ module lq_pfetch(
 				.dout(pfq_dscr_q[i])
 				 );
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    tri_rlmreg_p #(.WIDTH(`PFETCH_Q_SIZE), .INIT(1)) latch_pfq_dup_flag(

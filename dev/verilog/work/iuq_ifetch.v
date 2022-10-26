@@ -1055,7 +1055,7 @@ module iuq_ifetch(
 
 
    generate
-   begin : xhdl0
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : bp_gen
@@ -1175,8 +1175,8 @@ module iuq_ifetch(
                .scan_out(bp_scan_out[2 * i:2 * i + 1])
         );
      end
-   end
-   endgenerate
+   
+endgenerate
 
 
 /*   always @(iu0_bh0_rd_addr_int or iu0_bh0_rd_act_int or iu0_bh1_rd_addr_int or iu0_bh1_rd_act_int or iu0_bh2_rd_addr_int or iu0_bh2_rd_act_int or ex5_bh0_wr_data_int or ex5_bh0_wr_act_int or ex5_bh1_wr_data_int or ex5_bh1_wr_act_int or ex5_bh2_wr_data_int or ex5_bh2_wr_act_int or ex5_bh0_wr_addr_int or ex5_bh1_wr_addr_int or ex5_bh2_wr_addr_int or iu0_btb_rd_addr_int or iu0_btb_rd_act_int or ex5_btb_wr_addr_int or ex5_btb_wr_act_int or ex5_btb_wr_data_int or bp_ib_iu3_ifar or bp_ib_iu3_val_int or bp_ib_iu3_bta or bp_ib_iu3_0_instr or bp_ib_iu3_1_instr or bp_ib_iu3_2_instr or bp_ib_iu3_3_instr)
@@ -1359,7 +1359,7 @@ module iuq_ifetch(
    );
 
    generate
-   begin : xhdl1
+
       genvar  i;
       for (i = 0; i < `THREADS; i = i + 1)
       begin : uc_gen
@@ -1418,8 +1418,8 @@ module iuq_ifetch(
                .uc_ib_ext1(uc_ib_ext1[i])
          );
       end
-   end
-   endgenerate
+   
+endgenerate
 
    //??? Temp - Need to connect
    assign unit_dbg_data0 = bp_ib_iu3_0_instr[0][0:31];

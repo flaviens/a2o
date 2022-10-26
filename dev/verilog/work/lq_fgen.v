@@ -712,7 +712,8 @@ generate
       end
 endgenerate
 
-generate begin : memAttrQ
+generate
+
       genvar			ucodeEntry;
       for (ucodeEntry=0; ucodeEntry<UCODEDEPTH; ucodeEntry=ucodeEntry+1) begin : memAttrQ
          wire [0:`UCODE_ENTRIES_ENC+`THREADS_POOL_ENC-1]     ucodeEntryDummy = ucodeEntry;
@@ -767,7 +768,7 @@ generate begin : memAttrQ
          //    should have caused a DSI instead
          assign ex4_ucode_cnt_restart[ucodeEntry] = ex4_ucode_cnt_entry[ucodeEntry] & ex4_ucode_op & ex4_cache_acc_q & ~ucode_cnt_val_q[ucodeEntry];
       end
-   end
+   
 endgenerate
 
 assign ex4_ucode_align_val = |(ex4_ucode_align_int);
@@ -2065,7 +2066,8 @@ tri_rlmreg_p #(.WIDTH(UCODEDEPTH), .INIT(0), .NEEDS_SRESET(1)) ucode_cnt_2ucode_
    .dout(ucode_cnt_2ucode_q)
 );
 
-generate begin : ucode_cnt_memAttr
+generate
+
   genvar ucodeEntry;
   for (ucodeEntry=0; ucodeEntry<UCODEDEPTH; ucodeEntry=ucodeEntry+1) begin : ucode_cnt_memAttr
     tri_rlmreg_p #(.WIDTH(9), .INIT(1), .NEEDS_SRESET(1)) ucode_cnt_memAttr_reg(
@@ -2087,7 +2089,7 @@ generate begin : ucode_cnt_memAttr
        .dout(ucode_cnt_memAttr_q[ucodeEntry])
     );
   end
-end
+
 endgenerate
 
 assign siv[0:scan_right] = {sov[1:scan_right], scan_in};

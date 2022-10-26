@@ -631,14 +631,14 @@ module tri_serial_scom2 (
    endgenerate
 
    generate
-   begin : xhdl0
+
      genvar    i;
      for (i=0; i<=PAR_NOBITS-1; i=i+1)
      begin : wdata_par_check
        assign par_data_in[i] = (^data_shifter_lt_tmp[16*i:16*(i+1)-1]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    generate
    if (PIPELINE_PARITYCHK == 1'b1)
@@ -671,14 +671,14 @@ module tri_serial_scom2 (
 
    //-----------------------------------------------------------------------------
    generate
-   begin : xhdl1
+
       genvar    i;
       for (i=0; i<=PAR_NOBITS-1; i=i+1)
       begin : rdata_parity_gen
          assign sc_rparity[i] = (^data_shifter_lt_tmp[16*i:16*(i+1)-1]);
       end
-   end
-   endgenerate
+   
+endgenerate
    //-----------------------------------------------------------------------------
 
    //-----------------------------------------------------------------
@@ -769,15 +769,15 @@ module tri_serial_scom2 (
    // From VHDL: short_unused_addr_range: for i in use_addr'high+1 to 63 generate
    // Shouldn't be needed for A2, since we always define 64 SCOM addresses.
    generate
-   begin : xhdl4
+
     genvar  i;
      for (i=WIDTH; i<64; i=i+1)
      begin : short_unused_addr_range
        assign func_scan_out[STATE_WIDTH+WIDTH+(2*PAR_NOBITS)+HEAD_WIDTH+22 +i] =
               func_scan_in[ STATE_WIDTH+WIDTH+(2*PAR_NOBITS)+HEAD_WIDTH+22 +i];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign addr_v = dec_addr_q[0:WIDTH-1];
 

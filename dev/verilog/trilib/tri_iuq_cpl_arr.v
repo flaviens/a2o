@@ -156,64 +156,61 @@ module tri_iuq_cpl_arr (gnd, vdd, clk, rst, delay_lclkr_dc, mpw1_dc_b, mpw2_dc_b
 
       assign perr = 1'b0;
 
-      begin : xhdl0
-         genvar i;
-         for (i = 0; i <= PORT_BITWIDTH - 1; i = i + 1)
-         begin : array_gen0
-            RAM64X1D #(.INIT(64'h0000000000000000)) RAM64X1D0(
-               .DPO(dout0[i]),
-               .SPO(unused_SPO_0),
+      genvar i;
+      for (i = 0; i <= PORT_BITWIDTH - 1; i = i + 1)
+      begin : array_gen0
+         RAM64X1D #(.INIT(64'h0000000000000000)) RAM64X1D0(
+            .DPO(dout0[i]),
+            .SPO(unused_SPO_0),
 
-               .A0(addr_w0[0]),
-               .A1(addr_w0[1]),
-               .A2(addr_w0[2]),
-               .A3(addr_w0[3]),
-               .A4(addr_w0[4]),
-               .A5(addr_w0[5]),
+            .A0(addr_w0[0]),
+            .A1(addr_w0[1]),
+            .A2(addr_w0[2]),
+            .A3(addr_w0[3]),
+            .A4(addr_w0[4]),
+            .A5(addr_w0[5]),
 
-               //.A(addr_w0),
-               .D(din0[i]),
+            //.A(addr_w0),
+            .D(din0[i]),
 
-               .DPRA0(addr_r0[0]),
-               .DPRA1(addr_r0[1]),
-               .DPRA2(addr_r0[2]),
-               .DPRA3(addr_r0[3]),
-               .DPRA4(addr_r0[4]),
-               .DPRA5(addr_r0[5]),
+            .DPRA0(addr_r0[0]),
+            .DPRA1(addr_r0[1]),
+            .DPRA2(addr_r0[2]),
+            .DPRA3(addr_r0[3]),
+            .DPRA4(addr_r0[4]),
+            .DPRA5(addr_r0[5]),
 
-               //.DPRA(addr_r0),
-               .WCLK(clk),
-               .WE(wen0)
-            );
+            //.DPRA(addr_r0),
+            .WCLK(clk),
+            .WE(wen0)
+         );
 
-            RAM64X1D #(.INIT(64'h0000000000000000)) RAM64X1D1(
-               .DPO(dout1[i]),
-               .SPO(unused_SPO_1),
+         RAM64X1D #(.INIT(64'h0000000000000000)) RAM64X1D1(
+            .DPO(dout1[i]),
+            .SPO(unused_SPO_1),
 
-               .A0(addr_w1[0]),
-               .A1(addr_w1[1]),
-               .A2(addr_w1[2]),
-               .A3(addr_w1[3]),
-               .A4(addr_w1[4]),
-               .A5(addr_w1[5]),
+            .A0(addr_w1[0]),
+            .A1(addr_w1[1]),
+            .A2(addr_w1[2]),
+            .A3(addr_w1[3]),
+            .A4(addr_w1[4]),
+            .A5(addr_w1[5]),
 
-               //.A(addr_w1),
-               .D(din1[i]),
+            //.A(addr_w1),
+            .D(din1[i]),
 
-               .DPRA0(addr_r1[0]),
-               .DPRA1(addr_r1[1]),
-               .DPRA2(addr_r1[2]),
-               .DPRA3(addr_r1[3]),
-               .DPRA4(addr_r1[4]),
-               .DPRA5(addr_r1[5]),
+            .DPRA0(addr_r1[0]),
+            .DPRA1(addr_r1[1]),
+            .DPRA2(addr_r1[2]),
+            .DPRA3(addr_r1[3]),
+            .DPRA4(addr_r1[4]),
+            .DPRA5(addr_r1[5]),
 
-               //.DPRA(addr_r1),
-               .WCLK(clk),
-               .WE(wen1)
-            );
+            //.DPRA(addr_r1),
+            .WCLK(clk),
+            .WE(wen1)
+         );
 
-
-         end
       end
 
       assign do0_d = (ra0_q[ADDRESSBUS_WIDTH-1]) ? dout1 : dout0;

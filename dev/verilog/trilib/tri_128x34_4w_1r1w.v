@@ -206,7 +206,7 @@ module tri_128x34_4w_1r1w (
    wire [0:scan_right]                          func_sov;
 
    generate
-   begin
+
      assign tidn = 1'b0;
 
      if (addressbus_width < ramb_base_addr)
@@ -272,8 +272,8 @@ module tri_128x34_4w_1r1w (
        end  //ax
        assign data_out_d[w * port_bitwidth:((w + 1) * port_bitwidth) - 1] = ramb_data_out[w][0:port_bitwidth - 1];
      end  //aw
-   end
-   endgenerate
+   
+endgenerate
 
    assign data_out = data_out_l2;
 

@@ -1514,7 +1514,7 @@ module iuq_ic_ierat(
    //   4) hold is cleared, tlb-miss sets tlb_miss_q=1, tlb-hit writes erat
    //   5) replay of op clears tlb_miss_q if set, erat miss sets hold again but no flush this time
    generate
-   begin : xhdl1
+
      genvar  tid;
      for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
      begin : holdTid
@@ -1544,8 +1544,8 @@ module iuq_ic_ierat(
                                           (iu2_tlbreq_q == 1'b1 & iu2_valid_q[tid] == 1'b1 & ccr2_notlb_q == MMU_Mode_Value) ? 1'b1 :  // tlb service request for this thread
                                           tlb_req_inprogress_q[tid];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu2_tlbreq_d = (cam_hit == 1'b0 & iu1_flush_enab_q == 1'b0 & ccr2_notlb_q == MMU_Mode_Value & ccr2_frat_paranoia_q[9] == 1'b0 & iu_ierat_iu1_back_inv == 1'b0 &
                           iu1_prefetch_q == 1'b0 &
@@ -1566,7 +1566,7 @@ module iuq_ic_ierat(
 
 
    generate
-   begin : xhdl2
+
      genvar  tid;
      for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
      begin : rpnTid
@@ -1586,8 +1586,8 @@ module iuq_ic_ierat(
                                             rpn_holdreg_q[tid][52:63];    // hold value;
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign ex6_ieratwe_ws3 = (|(ex6_valid_q[0:`THREADS - 1])) & ex6_ttype_q[1] & (ex6_ws_q == 2'b11) & (ex6_tlbsel_q == TlbSel_IErat);  // eratwe WS=3
 
@@ -4096,7 +4096,7 @@ assign ex6_data_maskpar =
    assign ex4_rd_data_calc_par[67] = ^(ex4_rd_array_data_q[45:50]);
 
    generate
-   begin
+
       if (check_parity == 0)
       begin
          assign iu2_cmp_data_parerr_epn = 1'b0;
@@ -4118,8 +4118,8 @@ assign ex6_data_maskpar =
          assign ex4_rd_data_parerr_epn = |(ex4_rd_data_calc_par[50:60] ^ {ex4_rd_cam_data_q[83], ex4_rd_array_data_q[51:60]});   // epn side rd out parity error
          assign ex4_rd_data_parerr_rpn = |(ex4_rd_data_calc_par[61:67] ^ ex4_rd_array_data_q[61:67]);   // rpn side rd out parity error
       end
-   end
-   endgenerate
+   
+endgenerate
 
 
    // CAM Port
@@ -4236,7 +4236,7 @@ assign ex6_data_maskpar =
          ( iu_ierat_iu0_val & (~(snoop_val_q[0] & snoop_val_q[1])) ) );   // fetch
 
    generate
-   begin : xhdl3
+
      genvar  tid;
      for (tid = 0; tid <= 3; tid = tid + 1)
      begin : compTids
@@ -4257,8 +4257,8 @@ assign ex6_data_maskpar =
                                   (snoop_val_q[0] & snoop_val_q[1] & (~mmucr1_q[8]));    // invalidate snoop
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign thdid_enable[0] = ( (iu_ierat_iu0_val | (|(ex1_valid_q[0:`THREADS - 1])) & ex1_ttype_q[2] & ex1_tlbsel_q[0] & (~ex1_tlbsel_q[1])) &
                               ((~mmucr1_q[8]) & (~(snoop_val_q[0] & snoop_val_q[1])) & (~(csinv_complete))) );
@@ -6379,7 +6379,7 @@ assign ex6_data_maskpar =
    );
 
    generate
-   begin : xhdl4
+
      genvar  tid;
      for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
      begin : rpn_holdreg
@@ -6402,8 +6402,8 @@ assign ex6_data_maskpar =
           .dout(rpn_holdreg_q[tid][0:63])
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(16), .INIT(0), .NEEDS_SRESET(1)) entry_valid_latch(
       .vd(vdd),

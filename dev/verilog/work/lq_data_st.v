@@ -440,7 +440,8 @@ assign stq3_rot_sel3_d = {rotate_sel3, rotate_sel3};
 assign stq3_store_rel_par_d = lsq_dat_stq2_store_data[128:143];
 
 // Swizzle Rotate Data
-generate begin : swzlSTData
+generate
+
   genvar                           t;
   for (t = 0; t <= 7; t = t + 1) begin : swzlSTData
      assign stq3_store_rel_data_d[t * 16:(t * 16) + 15] = {lsq_dat_stq2_store_data[t + 0],
@@ -460,7 +461,7 @@ generate begin : swzlSTData
                                                            lsq_dat_stq2_store_data[t + 112],
                                                            lsq_dat_stq2_store_data[t + 120]};
   end
-end
+
 endgenerate
 
 // #############################################################################################
@@ -468,7 +469,8 @@ endgenerate
 // #############################################################################################
 
 // Store Data Rotate
-generate begin : l1dcrotl
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotl
       tri_rot16_lu drotl(
@@ -487,7 +489,7 @@ generate begin : l1dcrotl
          .gnd(gnd)
       );
    end
-end
+
 endgenerate
 
 // Parity Rotate
@@ -574,19 +576,21 @@ assign bittype_mask = (16'h0001 & {16{stq3_opsize_q[4]}}) | (16'h0003 & {16{stq3
                       (16'h000F & {16{stq3_opsize_q[2]}}) | (16'h00FF & {16{stq3_opsize_q[1]}}) |
                       (16'hFFFF & {16{stq3_opsize_q[0]}});
 
-generate begin : maskGen
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1)
    begin : maskGen
       assign stq3_optype_mask[b * 16:(b * 16) + 15] = bittype_mask;
    end
-end
+
 endgenerate
 
 assign stq3_msk_data = stq3_rot_data & stq3_optype_mask;
 
 // Swizzle Data to a proper format
-generate begin : swzlData
+generate
+
   genvar t;
   for (t = 0; t <= 15; t = t + 1)
   begin : swzlData
@@ -608,7 +612,7 @@ generate begin : swzlData
                                                stq4_dcarr_data_q[t + 96],
                                                stq4_dcarr_data_q[t + 112]};
   end
-end
+
 endgenerate
 
 assign stq4_rot_data_d = stq3_swzl_data[(128 - `STQ_DATA_SIZE):127];

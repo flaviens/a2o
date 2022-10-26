@@ -366,19 +366,18 @@ assign ldq_rel0_arb_val_d = |(ldqe_relBeats_val & ~ldqe_rel_eccdet);
 assign ldq_rel1_rdat_sel_d = ldq_rel0_rdat_sel;
 assign ldq_rel2_rdat_sel_d = ldq_rel1_rdat_sel_q;
 
-generate begin : relQ
+generate
+
    genvar                                                  ldq;
    for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : relQ
 
       // Reload Data Beat Home
       assign ldqe_rel_datSet[ldq] = ldq_rel1_beat_upd_q & {8{ldq_rel1_dbeat_val[ldq]}};
 
-      begin : relDatRetQ
-         genvar                                                  beat;
-         for (beat=0; beat<8; beat=beat+1) begin : relDatRetQ
-            assign ldqe_rel_datClr[ldq][beat]   = (ldq_rel2_beat_upd_q[beat] & ldq_rel2_entrySent[ldq] & ~ldq_rel2_blk_req) | ldqe_rel_eccdet[ldq];
-            assign ldqe_rel_datRet_d[ldq][beat] = ldqe_rel_datSet[ldq][beat] | (ldqe_rel_datRet_q[ldq][beat] & (~ldqe_rel_datClr[ldq][beat]));
-         end
+      genvar                                                  beat;
+      for (beat=0; beat<8; beat=beat+1) begin : relDatRetQ
+         assign ldqe_rel_datClr[ldq][beat]   = (ldq_rel2_beat_upd_q[beat] & ldq_rel2_entrySent[ldq] & ~ldq_rel2_blk_req) | ldqe_rel_eccdet[ldq];
+         assign ldqe_rel_datRet_d[ldq][beat] = ldqe_rel_datSet[ldq][beat] | (ldqe_rel_datRet_q[ldq][beat] & (~ldqe_rel_datClr[ldq][beat]));
       end
 
       // Reload Attempts from Arbiter
@@ -407,10 +406,9 @@ generate begin : relQ
       // Select Beat from Available beats in Reload Arbiters
       assign ldqe_relBeats_nxt[ldq][0] = ldqe_relBeats_avail[ldq][0];
 
-      begin : relSel genvar                                                  beat;
-         for (beat=1; beat<8; beat=beat+1) begin : relSel
-            assign ldqe_relBeats_nxt[ldq][beat] = &(~ldqe_relBeats_avail[ldq][0:beat-1]) & ldqe_relBeats_avail[ldq][beat];
-         end
+      genvar                                                  beat;
+      for (beat=1; beat<8; beat=beat+1) begin : relSel
+         assign ldqe_relBeats_nxt[ldq][beat] = &(~ldqe_relBeats_avail[ldq][0:beat-1]) & ldqe_relBeats_avail[ldq][beat];
       end
 
       // Convert Beat Selected into an Array Index
@@ -435,7 +433,7 @@ generate begin : relQ
                                          (ldqe_rel_rdat_perr_sel[ldq] == 2'b00) ? ldqe_rel_rdat_perr_q[ldq] :
                                          1'b0;
    end
-end
+
 endgenerate
 
 // Reload Data Array Arbiter
@@ -444,7 +442,8 @@ endgenerate
 // followed by a Round Robin Scheme within each Group
 
 // Expand LDQ to max supported
-generate begin : relExp
+generate
+
    genvar                                                grp;
    genvar                                                b;
    for (grp=0; grp<=(`LMQ_ENTRIES-1)/4; grp=grp+1) begin : relExp
@@ -457,12 +456,13 @@ generate begin : relExp
          end
       end
    end
-end
+
 endgenerate
 
 // Entry Select within Group
 // Round Robin Scheme within each 4 entries in a Group
-generate begin : relGrpEntry
+generate
+
    genvar                                                  grp;
    for (grp=0; grp<=(`LMQ_ENTRIES-1)/4; grp=grp+1) begin : relGrpEntry
       assign rel_grpEntry_val[grp]    = {ldq_rel_arb_entry[4*grp+0], ldq_rel_arb_entry[4*grp+1], ldq_rel_arb_entry[4*grp+2], ldq_rel_arb_entry[4*grp+3]};
@@ -509,12 +509,13 @@ generate begin : relGrpEntry
          rel_grpEntry_thresh[grp] = thresh;
       end
    end
-end
+
 endgenerate
 
 // Group Select Between all Groups
 // Round Robin Scheme within Groups
-generate begin : relGrp
+generate
+
    genvar                                                  grp;
    for (grp=0; grp<=3; grp=grp+1) begin : relGrp
       if (grp <= (`LMQ_ENTRIES - 1)/4) begin : grpExst
@@ -524,7 +525,7 @@ generate begin : relGrp
          assign rel_group_val[grp] = 1'b0;
       end
    end
-end
+
 endgenerate
 
 assign rel_group_sel[0] = (rel_group_last_sel_q[0] & ~(|rel_group_val[1:3]) & rel_group_val[0]) |
@@ -548,7 +549,8 @@ assign rel_group_sel[3] = (rel_group_last_sel_q[0] & ~(|rel_group_val[1:2]) & re
                           (rel_group_last_sel_q[3] & ~(|rel_group_val[0:2]) & rel_group_val[3]);
 
 // Reload Queue Entry Sent
-generate begin : relSent
+generate
+
    genvar                                                  grp;
    for (grp=0; grp<=(`LMQ_ENTRIES-1)/4; grp=grp+1) begin : relSent
       genvar                                            ldq;
@@ -556,7 +558,7 @@ generate begin : relSent
          assign ldqe_rel_sel[ldq+(grp*4)] = rel_grpEntry_sel[grp][ldq] & rel_group_sel[grp] & ldq_rel0_arb_val_d;
       end
    end
-end
+
 endgenerate
 
 assign rel_arb_sentL1       = |(ldqe_rel_sel);
@@ -598,7 +600,8 @@ end
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // Reload Data Array
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-generate begin : relq
+generate
+
    genvar bb;
    if (`RELQ_INCLUDE == 1) begin
       tri_64x144_1r1w  rdat(
@@ -753,7 +756,8 @@ generate begin : relq
       assign lq_pc_bo_fail = 2'b0;
       assign lq_pc_bo_diagout = 2'b0;
    end
-end endgenerate
+
+endgenerate
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // OUTPUTS
@@ -775,7 +779,8 @@ assign ldq_arb_rel2_rd_data  = rel2_rd_data;
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // REGISTERS
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-generate begin : ldqe_rel_datRet
+generate
+
    genvar                                                  ldq;
    for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : ldqe_rel_datRet
       tri_rlmreg_p #(.WIDTH(8), .INIT(0), .NEEDS_SRESET(1)) ldqe_rel_datRet_reg(
@@ -797,7 +802,7 @@ generate begin : ldqe_rel_datRet
          .dout(ldqe_rel_datRet_q[ldq])
       );
    end
-end
+
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(8), .INIT(0), .NEEDS_SRESET(1)) ldq_rel1_beat_upd_reg(
@@ -838,7 +843,8 @@ tri_rlmreg_p #(.WIDTH(8), .INIT(0), .NEEDS_SRESET(1)) ldq_rel2_beat_upd_reg(
    .dout(ldq_rel2_beat_upd_q)
 );
 
-generate begin : ldqe_relAttempts
+generate
+
    genvar                                                  ldq;
    for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : ldqe_relAttempts
       tri_rlmreg_p #(.WIDTH(3), .INIT(7), .NEEDS_SRESET(1)) ldqe_relAttempts_reg(
@@ -860,7 +866,7 @@ generate begin : ldqe_relAttempts
          .dout(ldqe_relAttempts_q[ldq])
       );
    end
-end
+
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) ldq_rel1_arb_sent_reg(
@@ -958,7 +964,8 @@ tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) ldq_rel0_arb_cTag_reg(
    .dout(ldq_rel0_arb_cTag_q)
 );
 
-generate begin : rel_grpEntry_last_sel
+generate
+
    genvar                                                  grp;
    for (grp=0; grp<=(`LMQ_ENTRIES-1)/4; grp=grp+1) begin : rel_grpEntry_last_sel
       tri_rlmreg_p #(.WIDTH(4), .INIT(8), .NEEDS_SRESET(1)) rel_grpEntry_last_sel_reg(
@@ -980,7 +987,7 @@ generate begin : rel_grpEntry_last_sel
          .dout(rel_grpEntry_last_sel_q[grp])
       );
    end
-end
+
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(4), .INIT(8), .NEEDS_SRESET(1)) rel_group_last_sel_reg(

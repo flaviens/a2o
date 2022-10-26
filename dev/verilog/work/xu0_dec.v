@@ -1689,7 +1689,8 @@ module xu0_dec(
 
    assign ex3_tid          = (ex3_val_q | (ex2_ord_tid_q & {`THREADS{ex3_ord_complete_q}}));
 
-   generate begin : perf_event
+   generate
+
       genvar  t,e;
       for (e=0;e<=3;e=e+1) begin : thread
          for (t=0;t<=`THREADS-1;t=t+1) begin : thread
@@ -1697,8 +1698,8 @@ module xu0_dec(
                                                  (spr_xesr1[4*e+16*t:4*e+16*t+3] == 4'd11 ? (ex3_tid[t] & perf_event_en[t] & ex3_any_mtspr_q) : 1'b0) ;
          end
       end
-   end
-   endgenerate
+   
+endgenerate
 
    //-------------------------------------------------------------------------
    // Decode
@@ -4487,7 +4488,8 @@ module xu0_dec(
       .din(ord_flush_1_q),
       .dout(ord_flush_2_q)
    );
-generate begin : spr_mmucr0_tlbsel_gen
+generate
+
    genvar i;
    for (i=0;i<`THREADS;i=i+1) begin : spr_mmucr0_tlbsel_entry
 	   tri_rlmreg_p #(.WIDTH(2), .OFFSET(0),.INIT(0), .NEEDS_SRESET(1)) spr_mmucr0_tlbsel_latch(
@@ -4505,7 +4507,7 @@ generate begin : spr_mmucr0_tlbsel_gen
 	      .dout(spr_mmucr0_tlbsel_q[i])
 	   );
    end
-end
+
 endgenerate
    tri_rlmlatch_p #(.INIT(0), .NEEDS_SRESET(1)) mm_xu_tlbwe_binv_latch(
       .clk(clk),

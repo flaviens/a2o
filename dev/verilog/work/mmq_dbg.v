@@ -799,7 +799,7 @@ module mmq_dbg(
       assign dbg_group4[59] = iu_mm_lmq_empty;
 
       generate
-         begin : xhdl0
+
             genvar                     tid;
             for (tid = 0; tid <= 3; tid = tid + 1)
             begin : Grp4Threads
@@ -822,8 +822,8 @@ module mmq_dbg(
                assign dbg_group4[68 + tid] = tidn;
             end
       end
-   end
-   endgenerate
+   
+endgenerate
 
    assign dbg_group4[72:74] = inval_dbg_snoop_valid_q[0:2];
    assign dbg_group4[75:77] = inval_dbg_snoop_ack_q[0:2];

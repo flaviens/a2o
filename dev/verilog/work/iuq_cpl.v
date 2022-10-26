@@ -909,7 +909,7 @@ module iuq_cpl(
    // calculate branch target address
    //-----------------------------------------------
    generate
-   	begin : xhdl0
+
    		genvar i;
    		for (i = 62 - `EFF_IFAR_WIDTH; i <= 61; i = i + 1)
    		begin : sign_extend_i0
@@ -930,8 +930,8 @@ module iuq_cpl(
             	assign bta_li_i0[i] = rn_cp_iu6_i0_instr[i - 32];
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign bta_abs_i0[62 - `EFF_IFAR_WIDTH:61] = (b_i0 == 1'b1) ? bta_li_i0[62 - `EFF_IFAR_WIDTH:61] :
                                                bta_bd_i0[62 - `EFF_IFAR_WIDTH:61];
@@ -943,7 +943,7 @@ module iuq_cpl(
                                            bta_off_i0[62 - `EFF_IFAR_WIDTH:61];
 
    generate
-      begin : xhdl1
+
       	genvar                        i;
       	for (i = 62 - `EFF_IFAR_WIDTH; i <= 61; i = i + 1)
       	begin : sign_extend_i1
@@ -964,8 +964,8 @@ module iuq_cpl(
       			assign bta_li_i1[i] = rn_cp_iu6_i1_instr[i - 32];
       		end
       	end
-      end
-   endgenerate
+      
+endgenerate
 
    assign bta_abs_i1[62 - `EFF_IFAR_WIDTH:61] = (b_i1 == 1'b1) ? bta_li_i1[62 - `EFF_IFAR_WIDTH:61] :
                                                bta_bd_i1[62 - `EFF_IFAR_WIDTH:61];

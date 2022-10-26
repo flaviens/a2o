@@ -77,7 +77,7 @@ module tri_nlat(
    parameter [0:WIDTH-1]          init_v = INIT;
 
    generate
-   begin
+
       wire                          sreset;
       wire [0:WIDTH-1]              int_din;
       reg [0:WIDTH-1]               int_dout;
@@ -119,6 +119,6 @@ module tri_nlat(
       assign scan_out = 1'b0;
 
       assign unused = | {vd, gd, scan_in};
-   end
-   endgenerate
+   
+endgenerate
 endmodule

@@ -149,7 +149,7 @@ module iuq_ram(
       assign ram_done_d = iu_pc_ram_done;
 
       generate
-         begin : xhdl1
+
             genvar               i;
             for (i = 0; i <= `THREADS - 1; i = i + 1)
             begin : issue_gating
@@ -158,8 +158,8 @@ module iuq_ram(
                                      (ram_val_q[i] == 1'b1) ? 1'b1 :
                                      ram_act_q[i];
             end
-         end
-         endgenerate
+         
+endgenerate
 
          assign ram_valid = pc_iu_ram_issue;
          assign ram_instr_d = {pc_iu_ram_instr, pc_iu_ram_instr_ext};

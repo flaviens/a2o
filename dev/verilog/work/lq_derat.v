@@ -1858,7 +1858,7 @@ module lq_derat(
    assign csinv_complete     = |(ex2_ttype_q[6:7]);
 
    generate
-      begin : sprThrd
+
          genvar tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
          begin : sprThrd
@@ -1871,8 +1871,8 @@ module lq_derat(
             assign derat_epsc_epid[tid]  = spr_derat_epsc_epid[14 * tid:(14 * tid) + 13];
             assign derat_pid[tid]        = mm_lq_pid[tid*14:(tid*14)+14-1];
          end
-      end
-   endgenerate
+      
+endgenerate
 
    //always @(derat_eplc_epid or derat_epsc_epid or derat_mmucr0 or derat_pid or derat_eplc_elpid or derat_epsc_elpid or ex3_ttype_q[10:11] or rpn_holdreg_q or ex1_valid or ex2_valid or ex3_valid_req)
    always @(*)
@@ -2412,7 +2412,8 @@ module lq_derat(
                          snoop_addr_q;
    assign lq_mm_snoop_ack = snoop_val_q[2];
 
-   generate begin : rpnTid
+   generate
+
          genvar tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : rpnTid
             if (GPR_WIDTH == 64) begin : gen64_holdreg
@@ -2440,8 +2441,8 @@ module lq_derat(
                                                   rpn_holdreg_q[tid][0:19];
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign ex2_deratwe_ws3 = (|(ex2_valid_op_q)) & ex2_ttype_q[1] & (ex2_ws_q == 2'b11) & (ex2_tlbsel_q == TlbSel_DErat);
    assign watermark_d = (ex2_deratwe_ws3 == 1'b1) ? ex2_data_in_q[64 - watermark_width:63] :
@@ -2485,7 +2486,8 @@ module lq_derat(
                     (eptr_q == 5'b11101) ? 5'b11110 :
                     (eptr_q == 5'b11110) ? 5'b11111 :
                     5'b00000;
-   generate begin : epn_mask
+   generate
+
          genvar                            i;
          for (i = (64 - (2 ** `GPR_WIDTH_ENC)); i <= 51; i = i + 1) begin : epn_mask
             if (i < 32) begin : R0
@@ -2495,8 +2497,8 @@ module lq_derat(
                assign ex3_epn_d[i] = dir_derat_ex2_epn_nonarr[i];
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
    // lru_update_event
    // 0: tlb reload
@@ -3579,7 +3581,7 @@ module lq_derat(
                                ex2_data_cmpmask[0:3], ex2_data_xbitmask[0:3], ex2_data_maskpar}) &
                                ({84{(|(ex2_valid_op_q) & ex2_ttype_q[1] & (~ex2_ws_q[0]) & (~ex2_ws_q[1]) & (~tlb_rel_val_q[4]))}}));
       end
-   endgenerate
+endgenerate
 
    generate
       if (GPR_WIDTH == 32)
@@ -4090,7 +4092,8 @@ module lq_derat(
                          ((|(ex2_pfetch_val_q)) == 1'b1))) ? 2'b11 :
                          2'b00;
    //  mmucr1_q: 0-DRRE, 1-REE, 2-CEE, 3-csync, 4-isync, 5:6-DPEI, 7:8-DCTID/DTTID, 9-DCCD
-   generate begin : compTids
+   generate
+
          genvar                            tid;
          for (tid = 0; tid <= 3; tid = tid + 1) begin : compTids
             if (tid < `THREADS) begin : validTid
@@ -4111,8 +4114,8 @@ module lq_derat(
                                         1'b0;
             end
          end
-      end
-   endgenerate
+      
+endgenerate
    assign thdid_enable[0] = (((mmucr1_q[8] == 1'b1) | (csinv_complete == 1'b1))) ? 1'b0 :
                             (((epsc_wr_q[2 * `THREADS] == 1'b1 & tlb_rel_val_q[4] == 1'b0 & mmucr1_q[8] == 1'b0) | (epsc_wr_q[2 * `THREADS] == 1'b0 & eplc_wr_q[2 * `THREADS] == 1'b1 & tlb_rel_val_q[4] == 1'b0 & mmucr1_q[8] == 1'b0))) ? 1'b1 :
                             ((snoop_val_q[0:1] == 2'b11)) ? 1'b0 :
@@ -4436,13 +4439,14 @@ module lq_derat(
    // Look for first IDLE state machine from ERATMISSQ(0) -> ERATMISSQ(`EMQ_ENTRIES-1)
    assign eratm_wrt_ptr[0] = eratm_entry_available[0];
 
-   generate begin : EMPriWrt
+   generate
+
          genvar emq;
          for (emq = 1; emq <= `EMQ_ENTRIES - 1; emq = emq + 1) begin : EMPriWrt
             assign eratm_wrt_ptr[emq] = &((~eratm_entry_available[0:emq - 1])) & eratm_entry_available[emq];
          end
-      end
-   endgenerate
+      
+endgenerate
 
    // ERATMISS Queue Update Valid
    assign ex4_eratm_val     = |(ex4_miss_q & (~cp_flush_q)) & (~(spr_ccr2_notlb_q | ex4_gate_miss_q));
@@ -4455,7 +4459,8 @@ module lq_derat(
    // The ERATMISS Queue epn is valid in ex5, so this covers the back-2-back case
    assign ex3_eratm_epn_m = ex3_eratm_chk_val & ex4_eratm_val & (ex4_epn_q == ex3_epn_q) & (~ex3_oldest_itag);
 
-   generate begin : ERATMQ
+   generate
+
          genvar emq;
          for (emq = 0; emq <= `EMQ_ENTRIES - 1; emq = emq + 1) begin : ERATMQ
 
@@ -4580,20 +4585,21 @@ module lq_derat(
                                                      1'b0;
             assign eratm_entry_int_det[emq]        = eratm_entry_tlbmiss_q[emq] | eratm_entry_tlbinelig_q[emq] | eratm_entry_ptfault_q[emq] | eratm_entry_lratmiss_q[emq] | eratm_entry_tlb_multihit_q[emq] | eratm_entry_tlb_par_err_q[emq] | eratm_entry_lru_par_err_q[emq];
          end
-      end
-   endgenerate
+      
+endgenerate
 
    // Request is the oldest ITAG
    assign ex3_oldest_itag      = (lsq_ctl_oldest_itag == ex3_itag_q) & (|(lsq_ctl_oldest_tid & ex3_valid_q));
    assign ex4_oldest_itag_d    = ex3_oldest_itag;
 
-   generate begin : cpNextItag
+   generate
+
          genvar tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : cpNextItag
             assign ex3_cp_next_tid[tid] = ex3_valid_q[tid] & cp_next_val_q[tid] & (ex3_itag_q == cp_next_itag_q[tid]);
          end
-      end
-   endgenerate
+      
+endgenerate
 
    // Thread Quiesced OR reduce
    always @(*) begin: tidQuiesce
@@ -4684,7 +4690,8 @@ module lq_derat(
    assign eratm_clrHold          = |(eratm_entry_clr_hold);
    assign eratm_clrHold_tid      = {`THREADS{eratm_clrHold}};
 
-   generate begin : holdTid
+   generate
+
          genvar                            tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : holdTid
             assign eratm_setHold_tid_ctrl[tid] = {ex4_setHold_tid[tid], eratm_clrHold_tid[tid]};
@@ -4692,8 +4699,8 @@ module lq_derat(
                                            (eratm_setHold_tid_ctrl[tid] == 2'b10) ? ex4_setHold_tid[tid] :
                                            1'b0;
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign derat_dcc_ex3_itagHit = |ex3_eratm_itag_hit;
    assign derat_dcc_ex4_restart = ex4_derat_restart;
@@ -7223,7 +7230,7 @@ module lq_derat(
    );
 /*
    generate
-      begin : rpn_holdreg
+
          genvar                            tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
          begin : rpn_holdreg
@@ -7247,8 +7254,8 @@ module lq_derat(
                .dout(rpn_holdreg_q[tid][0:63])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 */
 
    tri_rlmreg_p #(.WIDTH(32), .INIT(0), .NEEDS_SRESET(1)) entry_valid_latch(
@@ -9727,7 +9734,7 @@ module lq_derat(
    endgenerate
 /*
    generate
-      begin : eratm_entry_itag
+
          genvar                            emq;
          for (emq = 0; emq <= `EMQ_ENTRIES - 1; emq = emq + 1)
          begin : eratm_entry_itag
@@ -9751,12 +9758,12 @@ module lq_derat(
                .dout(eratm_entry_itag_q[emq])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 */
 /*
    generate
-      begin : eratm_entry_tid
+
          genvar                            emq;
          for (emq = 0; emq <= `EMQ_ENTRIES - 1; emq = emq + 1)
          begin : eratm_entry_tid
@@ -9780,12 +9787,12 @@ module lq_derat(
                .dout(eratm_entry_tid_q[emq])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 */
 /*
    generate
-      begin : eratm_entry_epn
+
          genvar                            emq;
          for (emq = 0; emq <= `EMQ_ENTRIES - 1; emq = emq + 1)
          begin : eratm_entry_epn
@@ -9809,8 +9816,8 @@ module lq_derat(
                .dout(eratm_entry_epn_q[emq])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 */
 
    tri_rlmreg_p #(.WIDTH(`EMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) eratm_entry_nonspec_val_latch(

@@ -609,7 +609,7 @@ module iuq_ic_dir(
    assign iu1_stored_erat_updating = |(stored_erat_act & iu1_tid_l2);  //'1' if stored erat is updating in IU2 for same thread that is in IU1
 
    generate
-      begin : xhdl1
+
       genvar  i;
       for (i = 0; i < `THREADS; i = i + 1)
       begin : erat_val_gen
@@ -617,8 +617,8 @@ module iuq_ic_dir(
         assign stored_erat_wimge_d[i] = ierat_iu_iu2_wimge;
         assign stored_erat_u_d[i]     = ierat_iu_iu2_u;
       end
-    end
-    endgenerate
+    
+endgenerate
 
    //---------------------------------------------------------------------
    // ERAT Output
@@ -684,7 +684,7 @@ module iuq_ic_dir(
    assign dir_rd_addr = {ics_icd_iu0_index51, ics_icd_iu0_ifar[52:56], (ics_icd_iu0_ifar[57] & (~(spr_ic_cls_l2 & (~ics_icd_iu0_spr_idir_read))))};
 
    generate
-   begin : xhdl2
+
      genvar  i;
      for (i = 0; i < dir_parity_width*8; i = i + 1)
      begin : calc_ext_dir_data
@@ -701,8 +701,8 @@ module iuq_ic_dir(
      begin : gen_dir_parity
        assign dir_parity_in[i] = ^(ext_dir_datain[i * 8:i * 8 + 7]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign way_datain[0:50 - (64 - `REAL_IFAR_WIDTH)] = icm_icd_dir_write_addr[(64 - `REAL_IFAR_WIDTH):50];
    assign way_datain[51 - (64 - `REAL_IFAR_WIDTH)] = icm_icd_dir_write_endian;
@@ -851,14 +851,14 @@ module iuq_ic_dir(
    assign data_write_act[3] = (data_way[2] | data_way[3]) &   icm_icd_reload_addr[51];
 
    generate
-   begin : xhdl4
+
      genvar  i;
      for (i = 0; i < 18; i = i + 1)
      begin : gen_data_parity
        assign data_parity_in[i] = ^(icm_icd_reload_data[i * 8:i * 8 + 7]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign data_datain = {icm_icd_reload_data, data_parity_in};
 
@@ -943,7 +943,7 @@ module iuq_ic_dir(
    // Compare Tag
    //---------------------------------------------------------------------
    generate
-   begin : xhdl5
+
      genvar  i;
      for (i = 0; i < 4; i = i + 1)
      begin : rd_tag_hit0
@@ -955,8 +955,8 @@ module iuq_ic_dir(
 
        assign iu2_rd_hit_stored[i] = iu2_dir_rd_val_l2[i] & iu2_rd_tag_hit_stored[i] & (iu2_stored_rpn_l2[51] == iu2_index51_l2) & (iu2_endian == iu2_dir_dataout[i * dir_way_width + 51 - (64 - `REAL_IFAR_WIDTH)]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
 
    assign iu2_dir_miss = (~|(iu2_rd_hit));
@@ -1022,7 +1022,7 @@ module iuq_ic_dir(
    //---------------------------------------------------------------------
    // Dir
    generate
-   begin : xhdl9
+
      genvar  w;
      for (w = 0; w < 4; w = w + 1)
      begin : calc_ext_dir_0
@@ -1047,8 +1047,8 @@ module iuq_ic_dir(
 
        assign iu2_dir_parity_err_way[w] = (|(dir_parity_err_byte[w])) & iu2_dir_rd_val_l2[w] & (iu2_valid_l2 | iu2_inval_l2 | iu2_spr_idir_read_l2 | iu2_prefetch_l2);		// Don't want to set error if array not read this cycle
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu2_rd_parity_err = |(iu2_dir_parity_err_way & iu2_rd_hit);
 
@@ -1066,7 +1066,7 @@ module iuq_ic_dir(
 
    //Data
    generate
-   begin : xhdl11
+
      genvar  w;
      for (w = 0; w < 4; w = w + 1)
      begin : data_parity_out_gen
@@ -1082,8 +1082,8 @@ module iuq_ic_dir(
 
        assign iu3_data_parity_err_way_d[w] = (|(data_parity_err_byte[w])) & iu2_dir_rd_val_l2[w] & iu2_valid_l2;
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign data_parity_err = |(iu3_data_parity_err_way_l2);
 
@@ -1116,7 +1116,7 @@ module iuq_ic_dir(
 
    // update LRU in IU2 on read hit or dir_write
    generate
-   begin : xhdl12
+
      genvar  a;
      for (a = 0; a < 128; a = a + 1)
      begin : dir_lru_gen
@@ -1154,11 +1154,11 @@ module iuq_ic_dir(
          (~(({4{iu2_inval_l2 & (iu2_ifar_eff_cacheline[51:57] == index_v7)}} & dir_val_l2[a]) &  iu2_rd_tag_hit)) &      // clear on back_invalidate
          (~({4{ici_val_l2}}));   // clear on ICI
      end
-   end
-   endgenerate
+   
+endgenerate
 
    generate
-   begin : xhdl13
+
      genvar  a;
      for (a = 0; a < 16; a = a + 1)
      begin : dir_lru_act_gen
@@ -1166,8 +1166,8 @@ module iuq_ic_dir(
        assign dir_lru_act[a] = (icm_icd_lru_write & (lru_write_cacheline[51:54] == index_v4)) |
                                (iu2_valid_l2 & (iu2_ifar_eff_cacheline[51:54] == index_v4));
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign dir_val_act = ici_val_l2 | (|(iu3_any_parity_err_way)) | icm_icd_any_reld_r2 | icm_icd_ecc_inval | iu2_inval_l2;
 
@@ -1211,7 +1211,7 @@ module iuq_ic_dir(
    //---------------------------------------------------------------------
    // IU2 Output
    generate
-   begin : xhdl14
+
      genvar  i;
      for (i = 0; i < 52; i = i + 1)
      begin : mm_epn
@@ -1220,8 +1220,8 @@ module iuq_ic_dir(
        if (i >= (62 - `EFF_IFAR_ARCH))
          assign iu_mm_ierat_epn[i] = iu2_ifar_eff_l2[i];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    // Handle Miss
    assign iu2_rd_miss = (iu2_valid_l2 | iu2_prefetch_l2) & (~|(ierat_iu_iu2_flush_req)) &
@@ -1273,7 +1273,7 @@ module iuq_ic_dir(
 
    // Rotate instructions
    generate
-   begin : xhdl15
+
      genvar  w;
      for (w = 0; w < 4; w = w + 1)
      begin : iu2_instr_rot0
@@ -1300,8 +1300,8 @@ module iuq_ic_dir(
        // that will cause problems with flush_2ucode.
        assign iu2_uc_illegal_cache_rot[w] = iu2_instr0_cache_rot[w][32] | (iu2_instr0_cache_rot[w][0:5] == 6'b011000);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu2_reload_rot[0] = (icm_icd_load_addr[60:61] == 2'b00) ? icm_icd_reload_data[0:35] :
                               (icm_icd_load_addr[60:61] == 2'b01) ? icm_icd_reload_data[36:71] :
@@ -1347,15 +1347,15 @@ module iuq_ic_dir(
    //xnop <= "011010" & ZEROS(6 to 35);
 
    generate
-   begin : xhdl16
+
      genvar  i;
      for (i = 0; i < 4; i = i + 1)
      begin : gen_instr
        assign iu2_instr[i] = (iu2_valid_l2 == 1'b1) ? iu2_hit_rot[i] :
                                                       iu2_reload_rot[i];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu2_uc_illegal = (iu2_valid_l2 == 1'b1) ? iu2_uc_illegal_cache :
                                                     iu2_uc_illegal_reload;
@@ -1390,7 +1390,7 @@ module iuq_ic_dir(
    // Performance Events
    //---------------------------------------------------------------------
    generate
-   begin : xhdl10
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_perf
@@ -1409,8 +1409,8 @@ module iuq_ic_dir(
                                                                             perf_instr_count_l2[i];
        assign perf_t_event_d[i][11] = iu2_valid_l2 & iu2_tid_l2[i] & perf_instr_count_new[i][0];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu2_instr_count = (iu2_ifar_eff_l2[60:61] == 2'b00) ? 3'b100 :
                             (iu2_ifar_eff_l2[60:61] == 2'b01) ? 3'b011 :
@@ -1932,7 +1932,7 @@ module iuq_ic_dir(
 
    // Dir
    generate
-   begin : xhdl17
+
      genvar  a;
      for (a = 0; a < 128; a = a + 1)
      begin : dir_val_latch_gen
@@ -1975,8 +1975,8 @@ module iuq_ic_dir(
           .dout(dir_lru_l2[a])
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmlatch_p #(.INIT(0)) iu3_miss_flush(
       .vd(vdd),
@@ -2316,7 +2316,7 @@ module iuq_ic_dir(
    );
 
    generate
-   begin : xhdl19
+
      if (`INCLUDE_IERAT_BYPASS == 0)
      begin : gen0
        genvar  i;
@@ -2393,11 +2393,11 @@ module iuq_ic_dir(
          );
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    generate
-   begin : xhdl18
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_perf_reg
@@ -2439,8 +2439,8 @@ module iuq_ic_dir(
           .dout(perf_t_event_l2[i])
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(2), .INIT(0)) perf_event_latch(
       .vd(vdd),

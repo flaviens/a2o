@@ -1126,7 +1126,7 @@ module mmq_spr(
       assign spr_etid_int_onehot[3] = (spr_etid_int_q == 2'b11);
 
       generate
-         begin : etid_generate
+
             genvar                               tid;
             for (tid = 0; tid <= 3; tid = tid + 1)
              begin : mmqsprflush
@@ -1144,12 +1144,12 @@ module mmq_spr(
                  assign unused_dc_threads[tid] = spr_etid_onehot[tid] | spr_etid_in_onehot[tid] | spr_etid_int_onehot[tid];
                end
              end
-         end
-      endgenerate
+         
+endgenerate
 
 `ifdef WAIT_UPDATES
       generate
-         begin : mmq_spr_tid_generate
+
             genvar                                tid;
             for (tid = 0; tid <= `MM_THREADS-1; tid = tid + 1)
             begin : mmThreads
@@ -1162,8 +1162,8 @@ module mmq_spr(
                  assign cp_flush_d[tid] = tidn;
                end
             end
-         end
-      endgenerate
+         
+endgenerate
 `endif
 
 assign iu_mm_ierat_mmucr1_we_d = iu_mm_ierat_mmucr1_we;
@@ -1173,8 +1173,10 @@ assign xu_mm_derat_mmucr1_we_d = xu_mm_derat_mmucr1_we;
       assign cp_flush_p1_d = cp_flush_q;
       assign cp_flush_p1 = cp_flush_p1_q;
 
-   //masthdNExist : if `THDID_WIDTH >  (`MM_THREADS) generate begin
-   //  masthdunused : for tid in  (`MM_THREADS) to (`THDID_WIDTH-1) generate begin
+   //masthdNExist : if `THDID_WIDTH >  (`MM_THREADS) generate
+
+   //  masthdunused : for tid in  (`MM_THREADS) to (`THDID_WIDTH-1) generate
+
    //        unused_dc_thdid(tid)     <= lrat_mas_thdid(tid) or tlb_lper_we_upd(tid) or tlb_delayed_act(tid+29);
    //  end generate masthdunused;
    //end generate masthdNExist;
@@ -1613,7 +1615,7 @@ assign xu_mm_derat_mmucr1_we_d = xu_mm_derat_mmucr1_we;
                                                          ((spr_match_lperu_0_q == 1'b1 & spr_ctl_int_q[1] == Spr_RW_Write)) ? spr_data_int_q[64 - `REAL_ADDR_WIDTH + 32:63] :
                                                          (tlb_lper_we_upd[0] == 1'b1) ? tlb_lper_0_lpn_upd[64 - `REAL_ADDR_WIDTH:31] :
                                                          lper_0_alpn_q[64 - `REAL_ADDR_WIDTH:31];
-      end
+      end   
    endgenerate
 
    generate
@@ -1622,7 +1624,7 @@ assign xu_mm_derat_mmucr1_we_d = xu_mm_derat_mmucr1_we;
          assign lper_0_alpn_d[64 - `REAL_ADDR_WIDTH:31] = ((spr_match_lperu_0_q == 1'b1 & spr_ctl_int_q[1] == Spr_RW_Write)) ? spr_data_int_q[64 - `REAL_ADDR_WIDTH + 32:63] :
                                                          (tlb_lper_we_upd[0] == 1'b1) ? tlb_lper_0_lpn_upd[64 - `REAL_ADDR_WIDTH:31] :
                                                          lper_0_alpn_q[64 - `REAL_ADDR_WIDTH:31];
-      end
+      end   
    endgenerate
 
    assign lper_0_lps_d = ((spr_match_lper_0_q == 1'b1 & spr_ctl_int_q[1] == Spr_RW_Write)) ? spr_data_int_q[60:63] :

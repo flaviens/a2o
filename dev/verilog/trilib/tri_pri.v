@@ -55,7 +55,7 @@ module tri_pri(
    wire [0:s]                 or_l5;
 
    generate
-   begin
+
      if (REV == 0)
      begin
        assign l0[0:s] = cond[0:s];
@@ -121,8 +121,8 @@ module tri_pri(
      end
 
      assign or_cond = ~or_l5[s];
-   end
-   endgenerate
+   
+endgenerate
 
 //!! [fail; tri_pri;  "Priority not zero or one hot!!"] : (pri1 ) <= not zero_or_one_hot(pri);
 

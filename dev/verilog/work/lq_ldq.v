@@ -1834,23 +1834,25 @@ assign ldqe_beat_init = {1'b0, ((~spr_xucr0_cls_q)), 2'b00};
 // LDQ Entry WRT Pointer Logic
 // Look for first IDLE state machine from LOADMISSQ(0) -> LOADMISSQ(`LMQ_ENTRIES-1)
 assign ldqe_wrt_ptr[0] = ldqe_available[0];
-generate begin : LdPriWrt
+generate
+
       genvar                                                  ldq;
       for (ldq=1; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : LdPriWrt
          assign ldqe_wrt_ptr[ldq] = &((~ldqe_available[0:ldq - 1])) & ldqe_available[ldq];
       end
-   end
+   
 endgenerate
 
 // Check for only 1 entry available
 // Look for first IDLE state machine from LOADMISSQ(`LMQ_ENTRIES-1) -> LOADMISSQ(0)
 assign ldqe_opposite_ptr[`LMQ_ENTRIES - 1] = ldqe_available[`LMQ_ENTRIES - 1];
-generate begin : lastMach
+generate
+
       genvar                                                  ldq;
       for (ldq = 0; ldq <= `LMQ_ENTRIES-2; ldq=ldq+1) begin : lastMach
          assign ldqe_opposite_ptr[ldq] = &((~ldqe_available[ldq + 1:`LMQ_ENTRIES - 1])) & ldqe_available[ldq];
       end
-   end
+   
 endgenerate
 
 assign ex4_one_machine_avail = |(ldqe_wrt_ptr & ldqe_opposite_ptr);
@@ -1893,7 +1895,8 @@ assign lq_pc_ldq_quiesce_d    = ldq_all_req_home & ctl_lsq_ldp_idle;
 assign lq_pc_stq_quiesce_d    = stq_ldq_empty;
 assign lq_pc_pfetch_quiesce_d = ctl_lsq_pf_empty;
 
-generate begin : loadQ
+generate
+
       genvar                                                  ldq;
       for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : loadQ
          wire [0:3]  ldqDummy;
@@ -2170,11 +2173,9 @@ generate begin : loadQ
                                        1'b0;
 
          // Determine if this entry was for the CP_NEXT itag
-         begin : ldqeItagTid
-            genvar                                                  tid;
-            for (tid=0; tid<`THREADS; tid=tid+1) begin : ldqeItagTid
-               assign ldqe_cpNext_tid[ldq][tid] = ldqe_thrd_id_q[ldq][tid] & (ldqe_itag_q[ldq] == iu_lq_cp_next_itag_q[tid]);
-            end
+         genvar                                                  tid;
+         for (tid=0; tid<`THREADS; tid=tid+1) begin : ldqeItagTid
+            assign ldqe_cpNext_tid[ldq][tid] = ldqe_thrd_id_q[ldq][tid] & (ldqe_itag_q[ldq] == iu_lq_cp_next_itag_q[tid]);
          end
 
          assign ldqe_cpNext_val[ldq] = |(ldqe_cpNext_tid[ldq]);
@@ -2423,7 +2424,7 @@ generate begin : loadQ
 
          assign ldqe_relDir_start_d[ldq] = ldqe_relDir_start[ldq];
       end
-   end
+   
 endgenerate
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -2463,12 +2464,13 @@ end
 assign lgqe_available = (~lgqe_valid_q);
 
 assign lgqe_wrt_ptr[0] = lgqe_available[0];
-generate begin : LgPriWrt
+generate
+
       genvar                                                  lgq;
       for (lgq=1; lgq<`LGQ_ENTRIES; lgq=lgq+1) begin : LgPriWrt
          assign lgqe_wrt_ptr[lgq] = &((~lgqe_available[0:lgq - 1])) & lgqe_available[lgq];
       end
-   end
+   
 endgenerate
 
 assign ld_gath_not_full = |(lgqe_available);
@@ -2481,7 +2483,8 @@ assign ex4_lgqe_set_all    = lgqe_wrt_ptr & {`LGQ_ENTRIES{ex4_ldreq_q}};
 assign ex5_lgqe_set_all_d  = ex4_lgqe_set_all;
 assign ex5_lgqe_set_val_d  = ex4_lgqe_set_val;
 
-generate begin : load_gath_Q
+generate
+
       genvar                                                  lgq;
       for (lgq=0; lgq<`LGQ_ENTRIES; lgq=lgq+1) begin : load_gath_Q
 
@@ -2512,13 +2515,11 @@ generate begin : load_gath_Q
          assign lgqe_ldTag_d[lgq] = ex4_lgqe_set_all[lgq] ? ldq_gath_Tag : lgqe_ldTag_q[lgq];
 
          // create a 1-hot core tag for each gather queue entry
-         begin : ldq_gath_Tag_1hot_G
-            genvar                                                  ldq;
-            for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : ldq_gath_Tag_1hot_G
-               wire [0:3]  ldqDummy;
-               assign ldqDummy = ldq[3:0];
-               assign ldq_gath_Tag_1hot[lgq][ldq] = lgqe_ldTag_q[lgq] == ldqDummy;
-            end
+         genvar                                                  ldq;
+         for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : ldq_gath_Tag_1hot_G
+            wire [0:3]  ldqDummy;
+            assign ldqDummy = ldq[3:0];
+            assign ldq_gath_Tag_1hot[lgq][ldq] = lgqe_ldTag_q[lgq] == ldqDummy;
          end
 
          // Request Physical Address QW select Bits
@@ -2578,11 +2579,9 @@ generate begin : load_gath_Q
          assign lgqe_back_inv_flush_upd[lgq] = |((ldqe_back_inv_q | ldq_rel_l1_dump) & ldq_gath_Tag_1hot[lgq]);
 
          // Determine if request is CP_NEXT itag
-         begin : lgqeItagTid
-            genvar                                                  tid;
-            for (tid=0; tid<`THREADS; tid=tid+1) begin : lgqeItagTid
-               assign lgqe_cpNext_tid[lgq][tid] = lgqe_thrd_id_q[lgq][tid] & (lgqe_itag_q[lgq] == iu_lq_cp_next_itag_q[tid]);
-            end
+         genvar                                                  tid;
+         for (tid=0; tid<`THREADS; tid=tid+1) begin : lgqeItagTid
+            assign lgqe_cpNext_tid[lgq][tid] = lgqe_thrd_id_q[lgq][tid] & (lgqe_itag_q[lgq] == iu_lq_cp_next_itag_q[tid]);
          end
 
          assign lgqe_cpNext_val[lgq] = |(lgqe_cpNext_tid[lgq]);
@@ -2655,7 +2654,7 @@ generate begin : load_gath_Q
          assign lgqe_upd_gpr_eccue_d[lgq] = lgqe_upd_gpr_eccue[lgq];
 
       end
-   end
+   
 endgenerate
 
 // determine when lmq entries do not have any more active gathers
@@ -2741,12 +2740,13 @@ assign ex5_setHold        = ex5_ldq_set_hold_q | ex5_ldq_full_set_hold;
 
 // Set Thread Held Indicator
 assign ldq_setHold_tid = ldq_hold_tid_q | {`THREADS{ex5_setHold}};
-generate begin : holdTid
+generate
+
       genvar                                                  tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : holdTid
          assign ldq_hold_tid[tid] = ctl_lsq_ex5_thrd_id[tid] ? ldq_setHold_tid[tid] : ldq_hold_tid_q[tid];
       end
-   end
+   
 endgenerate
 
 assign ldq_hold_tid_d = ldq_hold_tid & (~ldq_clrHold_tid);
@@ -2941,7 +2941,8 @@ assign fifo_ldq_req0_mkill = |(fifo_ldq_req_tid_q[0] & iu_lq_cp_flush_q);
 assign fifo_ldq_req0_avail = (fifo_ldq_req_val_q[0] & ~fifo_ldq_req0_mkill) & ~fifo_ldq_req_pfetch_q[0];
 
 // FIFO Control
-generate begin : fifoCtrl
+generate
+
       genvar                                                  fifo;
       for (fifo=0; fifo<`LMQ_ENTRIES; fifo=fifo+1) begin : fifoCtrl
          // Fifo Entry Was Zapped
@@ -2964,7 +2965,7 @@ generate begin : fifoCtrl
          assign fifo_ldq_req_push[fifo]  = |(fifo_ldq_req_empty_entry[0:fifo]) | fifo_ldq_req_sent;
          assign fifo_ldq_req_cntrl[fifo] = {fifo_ldq_req_upd[fifo], fifo_ldq_req_push[fifo]};
       end
-   end
+   
 endgenerate
 
 // Last entry of FIFO
@@ -2978,7 +2979,8 @@ assign fifo_ldq_req_val_d[`LMQ_ENTRIES-1]    = (fifo_ldq_req_cntrl[`LMQ_ENTRIES-
                                                 1'b1;
 
 // Rest of the entries of FIFO
-generate begin : ldqFifo
+generate
+
       genvar                                                  fifo;
       for (fifo=0; fifo<=`LMQ_ENTRIES-2; fifo=fifo+1) begin : ldqFifo
          assign fifo_ldq_req_tid_d[fifo] = (fifo_ldq_req_cntrl[fifo] == 2'b00) ? fifo_ldq_req_tid_q[fifo] :
@@ -2997,7 +2999,7 @@ generate begin : ldqFifo
                                            (fifo_ldq_req_cntrl[fifo] == 2'b01) ? fifo_ldq_req_val[fifo+1] :
                                            1'b1;
       end
-   end
+   
 endgenerate
 
 // Muxing Load Request to send to the L2
@@ -3111,14 +3113,15 @@ assign ldq_err_ecc_det_d   = l2_rel2_resp_val_q & l2_lsq_resp_ecc_err;
 assign ldq_err_ue_det_d    = l2_rel2_resp_val_q & l2_lsq_resp_ecc_err_ue;
 
 // 1-hot of quadword updated
-generate begin : relDat
+generate
+
       genvar                                                  beat;
       for (beat=0; beat<8; beat=beat+1) begin : relDat
          wire [0:2]     beatDummy;
          assign beatDummy = beat[2:0];
          assign ldq_rel0_beat_upd[beat] = (beatDummy == ldq_reload_qw);
       end
-   end
+   
 endgenerate
 
 lq_ldq_relq relq(
@@ -3528,7 +3531,8 @@ assign ldq_odq_upd_eccue    = ldq_rel3_odq_eccue;
 // followed by a Round Robin Scheme within each Group
 
 // Expand LDQ to max supported
-generate begin : cplExp
+generate
+
       genvar                                                  grp;
       for (grp=0; grp<=(`LMQ_ENTRIES+`LGQ_ENTRIES-1)/4; grp=grp+1) begin : cplExp
          genvar b;
@@ -3544,12 +3548,13 @@ generate begin : cplExp
             end
          end
       end
-   end
+   
 endgenerate
 
 // Entry Select within Group
 // Round Robin Scheme within each 4 entries in a Group
-generate begin : cplGrpEntry
+generate
+
       genvar                                                  grp;
       for (grp = 0; grp <= (`LMQ_ENTRIES + `LGQ_ENTRIES - 1)/4; grp = grp + 1) begin : cplGrpEntry
          assign cpl_grpEntry_val[grp]    = ldqe_remove[grp * 4:(grp * 4) + 3];
@@ -3640,12 +3645,13 @@ generate begin : cplGrpEntry
             cpl_grpEntry_larx[grp]     = larx;
          end
       end
-   end
+   
 endgenerate
 
 // Group Select Between all Groups
 // Round Robin Scheme within Groups
-generate begin : cplGrp
+generate
+
       genvar                                                  grp;
       for (grp=0; grp<=3; grp=grp+1) begin : cplGrp
          if (grp <= (`LMQ_ENTRIES+`LGQ_ENTRIES- 1)/4) begin : grpExst
@@ -3655,7 +3661,7 @@ generate begin : cplGrp
             assign cpl_group_val[grp] = 1'b0;
          end
       end
-   end
+   
 endgenerate
 
 assign cpl_group_sel[0] = (cpl_group_last_sel_q[0] & ~(|cpl_group_val[1:3]) & cpl_group_val[0]) |
@@ -3735,7 +3741,8 @@ always @(*) begin: cplGrpLqMux
 end
 
 // Completion Report has been sent
-generate begin : credSent
+generate
+
       genvar                                                  grp;
       for (grp = 0; grp <= (`LMQ_ENTRIES + `LGQ_ENTRIES - 1)/4; grp = grp + 1) begin : credSent
          genvar                                                  ldq;
@@ -3752,7 +3759,7 @@ generate begin : credSent
             end
          end
       end
-   end
+   
 endgenerate
 
 // Completion Report bus for exceptions, loadhits, orderq flush, loadmisses, loadmiss with ecc, and storetypes
@@ -4222,7 +4229,8 @@ tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) iu_lq_cp_flush_reg(
    .dout(iu_lq_cp_flush_q)
 );
 
-generate begin : iu_lq_cp_next_itag_tid
+generate
+
       genvar                                                  tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : iu_lq_cp_next_itag_tid
          tri_rlmreg_p #(.WIDTH(`ITAG_SIZE_ENC), .INIT(0), .NEEDS_SRESET(1)) iu_lq_cp_next_itag_reg(
@@ -4244,7 +4252,7 @@ generate begin : iu_lq_cp_next_itag_tid
             .dout(iu_lq_cp_next_itag_q[tid])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -5226,7 +5234,8 @@ tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) fifo_ldq_req_pf
    .dout(fifo_ldq_req_pfetch_q)
 );
 
-generate begin : fifo_ldq_req_tid
+generate
+
       genvar                                                  ldq;
       for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : fifo_ldq_req_tid
          tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) fifo_ldq_req_tid_reg(
@@ -5248,10 +5257,11 @@ generate begin : fifo_ldq_req_tid
             .dout(fifo_ldq_req_tid_q[ldq])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : fifo_ldq_req
+generate
+
       genvar                                                  ldq0;
       for (ldq0=0; ldq0<`LMQ_ENTRIES; ldq0=ldq0+1) begin : fifo_ldq_req
          tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) fifo_ldq_req_reg(
@@ -5273,7 +5283,7 @@ generate begin : fifo_ldq_req
             .dout(fifo_ldq_req_q[ldq0])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -5376,7 +5386,8 @@ tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) ldqe_reset_cpl_
    .dout(ldqe_reset_cpl_rpt_q)
 );
 
-generate begin : ldqe_iTag
+generate
+
       genvar                                                  ldq1;
       for (ldq1=0; ldq1<`LMQ_ENTRIES; ldq1=ldq1+1) begin : ldqe_iTag
          tri_rlmreg_p #(.WIDTH(`ITAG_SIZE_ENC), .INIT(0), .NEEDS_SRESET(1)) ldqe_iTag_reg(
@@ -5398,10 +5409,11 @@ generate begin : ldqe_iTag
             .dout(ldqe_itag_q[ldq1])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_thrd_id
+generate
+
       genvar                                                  ldq2;
       for (ldq2=0; ldq2<`LMQ_ENTRIES; ldq2=ldq2+1) begin : ldqe_thrd_id
          tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) ldqe_thrd_id_reg(
@@ -5423,10 +5435,11 @@ generate begin : ldqe_thrd_id
             .dout(ldqe_thrd_id_q[ldq2])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_wimge
+generate
+
       genvar                                                  ldq3;
       for (ldq3=0; ldq3<`LMQ_ENTRIES; ldq3=ldq3+1) begin : ldqe_wimge
          tri_rlmreg_p #(.WIDTH(5), .INIT(0), .NEEDS_SRESET(1)) ldqe_wimge_reg(
@@ -5448,7 +5461,7 @@ generate begin : ldqe_wimge
             .dout(ldqe_wimge_q[ldq3])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -5510,7 +5523,8 @@ tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) ldqe_pfetch_reg
    .dout(ldqe_pfetch_q)
 );
 
-generate begin : ldqe_op_size
+generate
+
       genvar                                                  ldq4;
       for (ldq4=0; ldq4<`LMQ_ENTRIES; ldq4=ldq4+1) begin : ldqe_op_size
          tri_rlmreg_p #(.WIDTH(3), .INIT(0), .NEEDS_SRESET(1)) ldqe_op_size_reg(
@@ -5532,10 +5546,11 @@ generate begin : ldqe_op_size
             .dout(ldqe_op_size_q[ldq4])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_tgpr
+generate
+
       genvar                                                  ldq5;
       for (ldq5=0; ldq5<`LMQ_ENTRIES; ldq5=ldq5+1) begin : ldqe_tgpr
          tri_rlmreg_p #(.WIDTH(AXU_TARGET_ENC), .INIT(0), .NEEDS_SRESET(1)) ldqe_tgpr_reg(
@@ -5557,10 +5572,11 @@ generate begin : ldqe_tgpr
             .dout(ldqe_tgpr_q[ldq5])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_usr_def
+generate
+
       genvar                                                  ldq6;
       for (ldq6=0; ldq6<`LMQ_ENTRIES; ldq6=ldq6+1) begin : ldqe_usr_def
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) ldqe_usr_def_reg(
@@ -5582,10 +5598,11 @@ generate begin : ldqe_usr_def
             .dout(ldqe_usr_def_q[ldq6])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_class_id
+generate
+
       genvar                                                  ldq7;
       for (ldq7=0; ldq7<`LMQ_ENTRIES; ldq7=ldq7+1) begin : ldqe_class_id
          tri_rlmreg_p #(.WIDTH(2), .INIT(0), .NEEDS_SRESET(1)) ldqe_class_id_reg(
@@ -5607,10 +5624,11 @@ generate begin : ldqe_class_id
             .dout(ldqe_class_id_q[ldq7])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_perf_events
+generate
+
       genvar                                                  ldq7;
       for (ldq7=0; ldq7<`LMQ_ENTRIES; ldq7=ldq7+1) begin : ldqe_perf_events
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) ldqe_perf_events_reg(
@@ -5632,10 +5650,11 @@ generate begin : ldqe_perf_events
             .dout(ldqe_perf_events_q[ldq7])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_dvc
+generate
+
       genvar                                                  ldq8;
       for (ldq8=0; ldq8<`LMQ_ENTRIES; ldq8=ldq8+1) begin : ldqe_dvc
          tri_rlmreg_p #(.WIDTH(2), .INIT(0), .NEEDS_SRESET(1)) ldqe_dvc_reg(
@@ -5657,10 +5676,11 @@ generate begin : ldqe_dvc
             .dout(ldqe_dvc_q[ldq8])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_ttype
+generate
+
       genvar                                                  ldq9;
       for (ldq9=0; ldq9<`LMQ_ENTRIES; ldq9=ldq9+1) begin : ldqe_ttype
          tri_rlmreg_p #(.WIDTH(6), .INIT(0), .NEEDS_SRESET(1)) ldqe_ttype_reg(
@@ -5682,10 +5702,11 @@ generate begin : ldqe_ttype
             .dout(ldqe_ttype_q[ldq9])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_dacrw
+generate
+
       genvar                                                  ldq10;
       for (ldq10=0; ldq10<`LMQ_ENTRIES; ldq10=ldq10+1) begin : ldqe_dacrw
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) ldqe_dacrw_reg(
@@ -5707,10 +5728,11 @@ generate begin : ldqe_dacrw
             .dout(ldqe_dacrw_q[ldq10])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_p_addr
+generate
+
       genvar                                                  ldq11;
       for (ldq11=0; ldq11<`LMQ_ENTRIES; ldq11=ldq11+1) begin : ldqe_p_addr
          tri_rlmreg_p #(.WIDTH(`REAL_IFAR_WIDTH), .INIT(0), .NEEDS_SRESET(1)) ldqe_p_addr_reg(
@@ -5732,7 +5754,7 @@ generate begin : ldqe_p_addr
             .dout(ldqe_p_addr_q[ldq11])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -5835,7 +5857,8 @@ tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) ldqe_back_inv_n
    .dout(ldqe_back_inv_np1Flush_q)
 );
 
-generate begin : ldqe_beat_cntr
+generate
+
       genvar                                                  ldq12;
       for (ldq12=0; ldq12<`LMQ_ENTRIES; ldq12=ldq12+1) begin : ldqe_beat_cntr
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) ldqe_beat_cntr_reg(
@@ -5857,7 +5880,7 @@ generate begin : ldqe_beat_cntr
             .dout(ldqe_beat_cntr_q[ldq12])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -6000,7 +6023,8 @@ tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) ldqe_algebraic_
    .dout(ldqe_algebraic_q)
 );
 
-generate begin : ldqe_state
+generate
+
       genvar                                                  ldq13;
       for (ldq13=0; ldq13<`LMQ_ENTRIES; ldq13=ldq13+1) begin : ldqe_state
          tri_rlmreg_p #(.WIDTH(7), .INIT(64), .NEEDS_SRESET(1)) ldqe_state_reg(
@@ -6022,10 +6046,11 @@ generate begin : ldqe_state
             .dout(ldqe_state_q[ldq13])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ldqe_sentRel_cntr
+generate
+
       genvar                                                  ldq;
       for (ldq=0; ldq<`LMQ_ENTRIES; ldq=ldq+1) begin : ldqe_sentRel_cntr
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) ldqe_sentRel_cntr_reg(
@@ -6047,7 +6072,7 @@ generate begin : ldqe_sentRel_cntr
             .dout(ldqe_sentRel_cntr_q[ldq])
          );
       end
-   end
+   
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(`LGQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) ex5_lgqe_set_all_reg(
@@ -6109,7 +6134,8 @@ tri_rlmreg_p #(.WIDTH(`LGQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) lgqe_valid_reg(
    .dout(lgqe_valid_q)
 );
 
-generate begin : lgqe_iTag
+generate
+
       genvar                                                  lgq;
       for (lgq=0; lgq<`LGQ_ENTRIES; lgq=lgq+1) begin : lgqe_iTag
          tri_rlmreg_p #(.WIDTH(`ITAG_SIZE_ENC), .INIT(0), .NEEDS_SRESET(1)) lgqe_iTag_reg(
@@ -6131,10 +6157,11 @@ generate begin : lgqe_iTag
             .dout(lgqe_itag_q[lgq])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : lgqe_ldTag
+generate
+
       genvar                                                  lgq0;
       for (lgq0=0; lgq0<`LGQ_ENTRIES; lgq0=lgq0+1) begin : lgqe_ldTag
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) lgqe_ldTag_reg(
@@ -6156,10 +6183,11 @@ generate begin : lgqe_ldTag
             .dout(lgqe_ldTag_q[lgq0])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : lgqe_thrd_id
+generate
+
       genvar                                                  lgq1;
       for (lgq1=0; lgq1<`LGQ_ENTRIES; lgq1=lgq1+1) begin : lgqe_thrd_id
          tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) lgqe_thrd_id_reg(
@@ -6181,7 +6209,7 @@ generate begin : lgqe_thrd_id
             .dout(lgqe_thrd_id_q[lgq1])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -6204,7 +6232,8 @@ tri_rlmreg_p #(.WIDTH(`LGQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) lgqe_byte_swap_
    .dout(lgqe_byte_swap_q)
 );
 
-generate begin : lgqe_op_size
+generate
+
       genvar                                                  lgq2;
       for (lgq2=0; lgq2<`LGQ_ENTRIES; lgq2=lgq2+1) begin : lgqe_op_size
          tri_rlmreg_p #(.WIDTH(3), .INIT(0), .NEEDS_SRESET(1)) lgqe_op_size_reg(
@@ -6226,10 +6255,11 @@ generate begin : lgqe_op_size
             .dout(lgqe_op_size_q[lgq2])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : lgqe_tgpr
+generate
+
       genvar                                                  lgq3;
       for (lgq3=0; lgq3<`LGQ_ENTRIES; lgq3=lgq3+1) begin : lgqe_tgpr
          tri_rlmreg_p #(.WIDTH(AXU_TARGET_ENC), .INIT(0), .NEEDS_SRESET(1)) lgqe_tgpr_reg(
@@ -6251,7 +6281,7 @@ generate begin : lgqe_tgpr
             .dout(lgqe_tgpr_q[lgq3])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -6334,7 +6364,8 @@ tri_rlmreg_p #(.WIDTH(`LGQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) lgqe_back_inv_n
    .dout(lgqe_back_inv_np1Flush_q)
 );
 
-generate begin : lgqe_dacrw
+generate
+
       genvar                                                  lgq4;
       for (lgq4=0; lgq4<`LGQ_ENTRIES; lgq4=lgq4+1) begin : lgqe_dacrw
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) lgqe_dacrw_reg(
@@ -6356,10 +6387,11 @@ generate begin : lgqe_dacrw
             .dout(lgqe_dacrw_q[lgq4])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : lgqe_dvc
+generate
+
       genvar                                                  lgq5;
       for (lgq5=0; lgq5<`LGQ_ENTRIES; lgq5=lgq5+1) begin : lgqe_dvc
          tri_rlmreg_p #(.WIDTH(2), .INIT(0), .NEEDS_SRESET(1)) lgqe_dvc_reg(
@@ -6381,10 +6413,11 @@ generate begin : lgqe_dvc
             .dout(lgqe_dvc_q[lgq5])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : lgqe_p_addr
+generate
+
       genvar                                                  lgq6;
       for (lgq6=0; lgq6<`LGQ_ENTRIES; lgq6=lgq6+1) begin : lgqe_p_addr
          tri_rlmreg_p #(.WIDTH(7), .INIT(0), .NEEDS_SRESET(1)) lgqe_p_addr_reg(
@@ -6406,7 +6439,7 @@ generate begin : lgqe_p_addr
             .dout(lgqe_p_addr_q[lgq6])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -6449,7 +6482,8 @@ tri_rlmreg_p #(.WIDTH(`LGQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) lgqe_axu_reg(
    .dout(lgqe_axu_q)
 );
 
-generate begin : lgqe_perf_events
+generate
+
       genvar                                                  lgq6;
       for (lgq6=0; lgq6<`LGQ_ENTRIES; lgq6=lgq6+1) begin : lgqe_perf_events
          tri_rlmreg_p #(.WIDTH(4), .INIT(0), .NEEDS_SRESET(1)) lgqe_perf_events_reg(
@@ -6471,7 +6505,7 @@ generate begin : lgqe_perf_events
             .dout(lgqe_perf_events_q[lgq6])
          );
       end
-   end
+   
 endgenerate
 
 
@@ -8062,7 +8096,8 @@ tri_rlmreg_p #(.WIDTH(`LMQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) ldqe_qHit_held_
    .dout(ldqe_qHit_held_q)
 );
 
-generate begin : cpl_grpEntry_last_sel
+generate
+
       genvar                                                  grp0;
       for (grp0=0; grp0<=(`LMQ_ENTRIES+`LGQ_ENTRIES-1)/4; grp0=grp0+1) begin : cpl_grpEntry_last_sel
          tri_rlmreg_p #(.WIDTH(4), .INIT(8), .NEEDS_SRESET(1)) cpl_grpEntry_last_sel_reg(
@@ -8084,7 +8119,7 @@ generate begin : cpl_grpEntry_last_sel
             .dout(cpl_grpEntry_last_sel_q[grp0])
          );
       end
-   end
+   
 endgenerate
 
 

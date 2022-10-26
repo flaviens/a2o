@@ -860,14 +860,15 @@ module xu(
    assign lq_xu_gpr_ex6_wa_d = lq_xu_gpr_ex5_wa[AXU_TARGET_ENC - (`GPR_POOL_ENC + `THREADS_POOL_ENC):AXU_TARGET_ENC - 1];
    assign lq_xu_gpr_ex6_wd_d = lq_xu_ex5_rt[128 - `GPR_WIDTH:127];
 
-   generate begin : parGen
+   generate
+
       genvar b;
       for (b=0;b<=`GPR_WIDTH/8-1;b=b+1)
       begin : parGen
          assign lq_xu_gpr_ex6_par[b] = ^(lq_xu_gpr_ex6_wd_q[(64 - `GPR_WIDTH) + b * 8:(64 - `GPR_WIDTH) + (b * 8) + 7]);
       end
-   end
-   endgenerate
+   
+endgenerate
 
    assign lq_xu_gpr_ex6_wd_int = {lq_xu_gpr_ex6_wd_q, lq_xu_gpr_ex6_par, 2'b10};
 

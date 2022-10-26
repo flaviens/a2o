@@ -446,7 +446,8 @@ assign ex3_dac4_cmpr_sel = (ex3_dac34m_q[0] == 1'b0) ? ex3_dac4_cmpr :
                            ex3_dac3_cmpr;
 
 // Determine if DAC is enabled for this thread
-generate begin : sprTidOut
+generate
+
   genvar tid;
   for (tid=0; tid<`THREADS; tid=tid+1) begin : sprTidOut
  	assign dbcr0_dac1_int[tid*2:(tid*2)+1] = dbcr0_dac1_q[tid];
@@ -458,7 +459,7 @@ generate begin : sprTidOut
    assign tspr_cspr_dbcr2_dvc1m_int[tid]  = tspr_cspr_dbcr2_dvc1m[tid*2:tid*2+1];
    assign tspr_cspr_dbcr2_dvc2m_int[tid]  = tspr_cspr_dbcr2_dvc2m[tid*2:tid*2+1];
   end
-end
+
 endgenerate
 
 lq_spr_dacen  lq_spr_dac1en(
@@ -516,13 +517,14 @@ lq_spr_dacen  lq_spr_dac4en(
    .dacw_en(ex3_dac4w_en)
 );
 
-generate begin : lq_spr_dvc_cmp
+generate
+
       genvar                     t;
       for (t = 0; t <= `THREADS - 1; t = t + 1) begin : lq_spr_dvc_cmp
          assign dbcr2_dvc1m_on_d[t] = |(tspr_cspr_dbcr2_dvc1m_int[t]) & |(tspr_cspr_dbcr2_dvc1be_int[t][8 - `GPR_WIDTH/8:7]);
          assign dbcr2_dvc2m_on_d[t] = |(tspr_cspr_dbcr2_dvc2m_int[t]) & |(tspr_cspr_dbcr2_dvc2be_int[t][8 - `GPR_WIDTH/8:7]);
       end
-end
+
 endgenerate
 
 assign ex3_dac1r_cmpr = ex3_dac1r_en & {`THREADS{ex3_dac1_cmpr_sel}};
@@ -1252,7 +1254,8 @@ tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) ex4_val_latch(
    .din(ex3_val),
    .dout(ex4_val_q)
 );
-generate begin : dbcr0_dac1
+generate
+
       genvar                     tid;
       for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : dbcr0_dac1
 
@@ -1275,9 +1278,10 @@ generate begin : dbcr0_dac1
             .dout(dbcr0_dac1_q[tid])
          );
       end
-   end
+   
 endgenerate
-generate begin : dbcr0_dac2
+generate
+
       genvar                     tid;
       for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : dbcr0_dac2
 
@@ -1300,9 +1304,10 @@ generate begin : dbcr0_dac2
             .dout(dbcr0_dac2_q[tid])
          );
       end
-end
+
 endgenerate
-generate begin : dbcr0_dac3
+generate
+
       genvar                     tid;
       for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : dbcr0_dac3
 
@@ -1325,9 +1330,10 @@ generate begin : dbcr0_dac3
             .dout(dbcr0_dac3_q[tid])
          );
       end
-end
+
 endgenerate
-generate begin : dbcr0_dac4
+generate
+
       genvar                     tid;
       for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : dbcr0_dac4
 
@@ -1350,7 +1356,7 @@ generate begin : dbcr0_dac4
             .dout(dbcr0_dac4_q[tid])
          );
       end
-end
+
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) dbcr2_dvc1m_on_latch(

@@ -355,13 +355,13 @@ assign unused = (|perf_event_mux_ctrl) | clkoff_dc_b_int[1] | d_mode_dc_int[1] |
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 generate
-  begin : dbgData
+
     genvar bus;
     for (bus=0; bus<32; bus=bus+1) begin : dbgData
       assign lq_dbg_data_mux1[bus] = lq_debug_bus0;
       assign lq_dbg_data_mux2[bus] = lq_debug_bus0;
     end
-  end
+  
 endgenerate
 
 assign lq_mux1_debug_data_in    = debug_bus_in;
@@ -475,7 +475,8 @@ assign perf_event_en_d = ( spr_msr_pr_q &                 {`THREADS{pc_lq_event_
 // Muxing
 assign perf_event_mux_ctrl = {ctl_perv_spr_lesr1, ctl_perv_spr_lesr2};
 
-generate begin : TidPerf
+generate
+
   genvar tid;
   for (tid=0;tid<`THREADS;tid=tid+1) begin : TidPerf
       // Generate Events Per Thread
@@ -583,7 +584,7 @@ generate begin : TidPerf
          .event_bus_out(perf_event_data_d[tid*4:(tid*4)+3])
       );
   end
-end
+
 endgenerate
 
 assign event_bus_out = perf_event_data_q;

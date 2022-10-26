@@ -90,14 +90,14 @@ module tri_scom_addr_decode(
 
 //=====================================================================
    generate
-     begin : decode_it
+
 	 genvar    i;
 	 for (i=0; i<ADDR_SIZE; i=i+1)
 	 begin : decode_it
             assign address[i] = ({{32-SATID_NOBITS{1'b0}},sc_addr} == i) & USE_ADDR[i];
     	 end
-     end
-   endgenerate
+     
+endgenerate
 
       assign scaddr_dec  = address;
       assign scaddr_nvld = sc_req & (~|address);

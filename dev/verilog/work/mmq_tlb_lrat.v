@@ -1857,7 +1857,7 @@ module mmq_tlb_lrat(
       assign unused_dc[13] = ex6_illeg_instr[0];
 
       generate
-         begin : xhdl0
+
             genvar   tid;
             for (tid = 0; tid <= `THDID_WIDTH - 1; tid = tid + 1)
             begin : lratunused
@@ -1866,8 +1866,8 @@ module mmq_tlb_lrat(
                   assign unused_dc_threads[tid] = tlb_tag0_thdid[tid];
                end
          end
-      end
-      endgenerate
+      
+endgenerate
 
       //---------------------------------------------------------------------
       // Latches

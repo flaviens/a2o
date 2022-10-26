@@ -773,7 +773,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
 
    // This is used to convert the wide vector port inputs into an internal 2 dimesional array format
    generate
-      begin : ports
+
          genvar tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
            begin : convert
@@ -781,8 +781,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
              assign iu_lq_i0_completed_itag_int[tid] = iu_lq_i0_completed_itag[`ITAG_SIZE_ENC*tid:(`ITAG_SIZE_ENC*(tid+1))-1];
              assign iu_lq_i1_completed_itag_int[tid] = iu_lq_i1_completed_itag[`ITAG_SIZE_ENC*tid:(`ITAG_SIZE_ENC*(tid+1))-1];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign compressed_store_collision = 1'b0;
    assign lsq_perv_odq_events = {4+`THREADS{1'b0}};
@@ -877,7 +877,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
 
 
    generate
-      begin : fcf
+
          genvar tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
            begin : flushCredFree
@@ -894,8 +894,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
               assign flush_credit_avail[tid] = |(flushed_credit_count_q[tid]);
               assign flush_credit_free[tid] = ((~compress_val)) & flush_credit_avail[tid] & flush_credit_token[tid];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // need to do a better scheme here, right now just give thread 0 higher priority.
    generate
@@ -968,7 +968,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
 
 
    generate
-      begin : gen_a
+
          genvar                            entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : gen_a
@@ -1158,8 +1158,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
                 end
 
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // =======================================================================
    // Age Detection
@@ -1170,7 +1170,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
 
    // Determine Closest Youngest Store
    generate
-      begin : ady
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : ageDetectYoung
@@ -1208,12 +1208,12 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
                    assign orderq_entry_stTag_1hot[entry][b] = (bitVect == orderq_entry_stTag_q[entry]);
                 end
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // Determine Closest Oldest Store
    generate
-      begin : ado
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : ageDetectOld
@@ -1228,8 +1228,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
                    assign ex2_nxt_oldest_ptr[entry] = (~(|(ex2_age_older_st[entry + 1:`LDSTQ_ENTRIES - 1]))) & ex2_age_older_st[entry];
 		        end
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // Closest Youngest instruction is my entry shifted to the right by 1
    assign ex2_age_younger_ptr = {1'b0, ex2_age_upper_ptr[0:`LDSTQ_ENTRIES - 2]};
@@ -1269,7 +1269,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
    // Determine if we have a load colliding with an incomming store that is older than it, these need to be flushed
    //
    generate
-      begin : flush_a
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : flush_a
@@ -1279,8 +1279,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
               assign forw_flush_detected[entry]  = forw_collisions_ahead[entry] & orderq_entry_val_q[entry] & orderq_entry_ld_q[entry] & (~orderq_entry_hit_q[entry]);
               assign set_flush_condition[entry]  = store_flush_detected[entry] | forw_flush_detected[entry] | ci_flush_detected[entry];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // TODO:
    //
@@ -1317,7 +1317,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
    assign lq_iu_credit_free   = lq_iu_credit_free_q;
 
    generate
-      begin : compVect
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : compVect
@@ -1332,8 +1332,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
                    assign compress_vector[entry]   = |(remove_entry_base[0:entry]);
                 end
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //
    //  if we are compressing this cycle, shift the flush vector so it is correct
@@ -1342,7 +1342,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
    assign flush_vector = flush_vector_pre;
 
    generate
-      begin : cmp_loop
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : cmp_loop
@@ -1416,8 +1416,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
                      end
                 end
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    //
@@ -1466,26 +1466,26 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
    assign collision_vector_new = (compress_val_q == 1'b0) ? collision_vector_q :
                                  {collision_vector_q[1:`LDSTQ_ENTRIES - 1], 1'b0};
    generate
-      begin : gen_ops
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : gen_ops
               assign queue_entry_is_store[entry] = ((orderq_entry_ld_q[entry] == 1'b0) & orderq_entry_pre_q[entry] == 1'b0);
               assign queue_entry_is_load[entry]  = (orderq_entry_ld_q[entry] == 1'b1);
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //collision_check_mask(0) <= '0';
    generate
-      begin : col_det_g
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : col_det_g
               assign oo_collision_detected[entry] = collision_vector_new[entry] & collision_check_mask[entry];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    always @(*)
      begin : def2
@@ -1496,7 +1496,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
       end
 
    generate
-      begin : col_det_f
+
          genvar entry;
          for (entry = 1; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : col_det_f
@@ -1510,8 +1510,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
                    forw_collisions_ahead[entry]  = oo_collision_detected[entry] & ldq_odq_vld_q & ldq_odq_fwd_q;
                 end
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    assign ldq_odq_pfetch_vld_ex6_d = ldq_odq_pfetch_vld;
@@ -1588,7 +1588,7 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
    end
 
    generate
-      begin : gen_b
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : gen_b
@@ -1647,11 +1647,11 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
 
                 end
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : cmp2_loop
+
          genvar  entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : cmp2_loop
@@ -1714,8 +1714,8 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
               // not collide with any instruction
               assign collision_vector[entry] = (collision_vector_pre[entry] & ((~orderq_entry_pre_q[entry])));
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign collision_vector_d = collision_vector;
 
@@ -1790,14 +1790,14 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
    generate
-      begin : urld_gen
+
          genvar entry;
          for (entry = 0; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : urld_gen
               assign unresolved_load[entry] = orderq_entry_inuse_q[entry] & ((~orderq_entry_val_q[entry])) & orderq_entry_ld_q[entry];
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    //SENS always @(unresolved_load[0:`LDSTQ_ENTRIES - 1] or orderq_entry_itag_q)
@@ -1861,14 +1861,14 @@ module lq_odq(		// 0 = ibm (Umbra), 1 = non-ibm, 2 = ibm (MPG)
    // from the middle.  I will check ldq_odq_vld and only allow a flushed entry removal from the middle if this value is 0.
    //
    generate
-      begin : rld_gen
+
          genvar entry;
          for (entry = 1; entry <= `LDSTQ_ENTRIES - 1; entry = entry + 1)
            begin : rld_gen
               assign remove_entry_vec[entry] = (orderq_entry_inuse_q[entry] & orderq_entry_flushed_q[entry] & ((~ldq_odq_vld)));
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    //SENS always @(remove_entry_vec or orderq_entry_tid_q)

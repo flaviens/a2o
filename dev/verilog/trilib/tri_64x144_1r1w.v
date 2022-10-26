@@ -227,7 +227,8 @@ wire [0:scan_right]                            sov;
 (* analysis_not_referenced="true" *)
 wire						 unused;
 
-generate begin
+generate
+
   assign tiup = 1'b1;
   assign tidn = 1'b0;
   assign wrt_en = {(((((port_bitwidth-1)/36)+1)*36)/9){write_enable}};
@@ -328,7 +329,7 @@ generate begin
   assign repr_scan_out = tidn;
   assign bo_pc_failout = 2'b00;
   assign bo_pc_diagloop = 2'b00;
-end
+
 endgenerate
 
 assign unused = | {

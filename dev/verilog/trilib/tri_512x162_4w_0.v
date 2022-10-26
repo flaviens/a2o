@@ -219,7 +219,7 @@ module tri_512x162_4w_0 (
    wire [0:port_bitwidth*ways-1]                  unused_scout;
 
    generate
-   begin
+
      assign tidn = 1'b0;
 
      if (addressbus_width < ramb_base_addr)
@@ -338,6 +338,6 @@ module tri_512x162_4w_0 (
      assign bo_pc_diagloop = 2'b00;
 
      assign unused = | ({ramb_data_out[0][port_bitwidth:ramb_base_width * ramb_width_mult - 1], ramb_data_out[1][port_bitwidth:ramb_base_width * ramb_width_mult - 1], ramb_data_out[2][port_bitwidth:ramb_base_width * ramb_width_mult - 1], ramb_data_out[3][port_bitwidth:ramb_base_width * ramb_width_mult - 1], ccflush_dc, lcb_clkoff_dc_b, lcb_d_mode_dc, lcb_act_dis_dc, scan_dis_dc_b, scan_diag_dc, bitw_abist, lcb_sg_1, lcb_time_sg_0, lcb_repr_sg_0, lcb_abst_sl_thold_0, lcb_repr_sl_thold_0, lcb_time_sl_thold_0, lcb_ary_nsl_thold_0, tc_lbist_ary_wrt_thru_dc, abist_en_1, din_abist, abist_cmp_en, abist_raw_b_dc, data_cmp_abist, addr_abist, r_wb_abist, write_thru_en_dc, abst_scan_in, time_scan_in, repr_scan_in, func_scan_in, lcb_delay_lclkr_np_dc, ctrl_lcb_delay_lclkr_np_dc, dibw_lcb_delay_lclkr_np_dc, ctrl_lcb_mpw1_np_dc_b, dibw_lcb_mpw1_np_dc_b, lcb_mpw1_pp_dc_b, lcb_mpw1_2_pp_dc_b, aodo_lcb_delay_lclkr_dc, aodo_lcb_mpw1_dc_b, aodo_lcb_mpw2_dc_b, lcb_bolt_sl_thold_0, pc_bo_enable_2, pc_bo_reset, pc_bo_unload, pc_bo_repair, pc_bo_shdata, pc_bo_select, tri_lcb_mpw1_dc_b, tri_lcb_mpw2_dc_b, tri_lcb_delay_lclkr_dc, tri_lcb_clkoff_dc_b, tri_lcb_act_dis_dc, write_act, dob, dopb, unused_scout});
-   end
-   endgenerate
+   
+endgenerate
 endmodule

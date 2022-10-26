@@ -374,7 +374,8 @@ lq_spr_cspr #(.hvmode(hvmode), .a2mode(a2mode)) lq_spr_cspr(
    .gnd(gnd)
 );
 
-generate begin : thread
+generate
+
       genvar                     t;
       for (t=0; t<`THREADS; t=t+1) begin : thread
          lq_spr_tspr #(.hvmode(hvmode), .a2mode(a2mode)) lq_spr_tspr(
@@ -437,7 +438,7 @@ generate begin : thread
             .gnd(gnd)
          );
       end
-   end
+   
 endgenerate
 
 tri_rlmlatch_p #(.INIT(0), .NEEDS_SRESET(1)) slowspr_val_in_latch(

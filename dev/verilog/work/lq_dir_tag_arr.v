@@ -237,7 +237,8 @@ assign wr_data = wdata;
 // Array Parity Generation
 // ####################################################
 
-generate begin : extra_byte
+generate
+
       genvar                                                       t;
       for (t = 0; t <= 7; t = t + 1) begin : extra_byte
          if (t < (tagSize % 8)) begin : R0
@@ -247,15 +248,16 @@ generate begin : extra_byte
             assign extra_byte_par[t] = 1'b0;
          end
       end
-   end
+   
 endgenerate
 
-generate begin : par_gen
+generate
+
       genvar                                                       i;
       for (i = 0; i <= (tagSize/8) - 1; i = i + 1) begin : par_gen
          assign arr_parity[i] = ^(wr_data[8*i+uprTagBit:8*i+uprTagBit+7]);
       end
-   end
+   
 endgenerate
 
 generate
@@ -270,7 +272,8 @@ assign arr_wr_data = {wr_data, arr_parity};
 // Tag Array Read
 // ####################################################
 
-generate begin : tagRead
+generate
+
      genvar                                                       way;
      for (way=0; way<numWays; way=way+1) begin : tagRead
         assign p0_rd_way[way] = arr_rd_data0[(way*WAYDATASIZE):(way*WAYDATASIZE) + tagSize - 1];
@@ -286,14 +289,15 @@ generate begin : tagRead
            assign p1_rd_par[way] = arr_rd_data1[(way*WAYDATASIZE) + tagSize:(way*WAYDATASIZE) + tagSize + PARBITS - 1];
         end
      end
-   end
+   
 endgenerate
 
 // ####################################################
 // Tag Parity Generation
 // ####################################################
 
-generate begin : rdExtraByte
+generate
+
       genvar way;
       for (way=0; way<numWays; way=way+1) begin : rdExtraByte
          genvar                                                       t;
@@ -308,10 +312,11 @@ generate begin : rdExtraByte
             end
          end
       end
-   end
+   
 endgenerate
 
-generate begin : rdParGen
+generate
+
       genvar way;
       for (way=0; way<numWays; way=way+1) begin : rdParGen
          genvar                                                       i;
@@ -355,7 +360,7 @@ generate begin : rdParGen
             tri_xnor2 p1_parity_gen_2b_0 (.y(p1_parity_gen_2b[way][i]), .a(p1_par_gen_1stlvlc[way][i]), .b(p1_par_gen_1stlvld[way][i]));
          end
       end
-   end
+   
 endgenerate
 
 generate
@@ -386,13 +391,14 @@ endgenerate
 // Parity Error Detect
 // ####################################################
 
-generate begin : parDet
+generate
+
      genvar                                                       way;
      for (way=0; way<numWays; way=way+1) begin : parDet
         assign p0_par_err_det[way] = p0_parity_gen_1b[way] ^ p0_parity_gen_2b[way] ^ p0_rd_par[way];
         assign p1_par_err_det[way] = p1_parity_gen_1b[way] ^ p1_parity_gen_2b[way] ^ p1_rd_par[way];
      end
-   end
+   
 endgenerate
 
 // ####################################################

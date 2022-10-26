@@ -518,7 +518,7 @@ module iuq_ic_miss(
    assign tidn32 = 32'b0;
 
    generate
-   begin : xhdl1
+
      if (TAGS_USED < SM_MAX)
      begin : gen_unused_t1
 	   assign miss_unused = | {load_tag[TAGS_USED:SM_MAX - 1], reset_state[TAGS_USED:SM_MAX - 1], request_tag[TAGS_USED:SM_MAX - 1], write_dir_val[TAGS_USED:SM_MAX - 1], hold_tid[TAGS_USED:SM_MAX - 1], dir_write[TAGS_USED:SM_MAX - 1], miss_ci_d[TAGS_USED:SM_MAX - 1], miss_flushed_d[TAGS_USED:SM_MAX - 1], miss_inval_d[TAGS_USED:SM_MAX - 1], active_l1_miss[TAGS_USED:SM_MAX-1], miss_tid_sm_d[TAGS_USED], miss_tid_sm_d[SM_MAX - 1]};    // ??? tid_sm isn't covered for (sm_max-tags_used > 2)
@@ -554,8 +554,8 @@ module iuq_ic_miss(
        assign miss_unused = 1'b0;
      end
 
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu0_ifar[0] = ics_icm_iu0_t0_ifar;
    assign iu0_ifar[1] = ics_icm_iu0_t0_ifar;
@@ -569,14 +569,14 @@ module iuq_ic_miss(
    // Latch Inputs, Reload pipeline
    //---------------------------------------------------------------------
    generate
-   begin : xhdl2
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_default_reld_act
        assign default_reld_act_v[i] = (~miss_tid_sm_l2[i][IDLE]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign default_reld_act = |(default_reld_act_v);
    assign miss_or_default_act = default_reld_act | (|(miss_act));
@@ -595,15 +595,15 @@ module iuq_ic_miss(
    assign reld_r0_vld = an_ac_reld_data_vld_l2 & (an_ac_reld_core_tag_l2[0:2] == 3'b010);
 
    generate
-   begin : xhdl3
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_reld_tag
        wire [0:1]  index = i;
        assign reld_r0_tag[i] = (an_ac_reld_core_tag_l2[3:4] == index);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign reld_r1_val_d = {TAGS_USED{reld_r0_vld}} & reld_r0_tag;
    assign reld_r1_qw_d = an_ac_reld_qw_l2;
@@ -619,7 +619,7 @@ module iuq_ic_miss(
    assign an_ac_reld_ecc_err_ue_d = an_ac_reld_ecc_err_ue;
 
    generate
-   begin : xhdl4
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_reld_r3_tid
@@ -627,8 +627,8 @@ module iuq_ic_miss(
        assign iu2_flush[2 * i] = ics_icm_iu2_flush[i];
        assign iu2_flush[2 * i + 1] = ics_icm_iu2_flush[i];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    //---------------------------------------------------------------------
    // State Machine
@@ -649,7 +649,7 @@ module iuq_ic_miss(
    // For now, always generating 4 tables, even if only 1 thread.  Can't generate based on a generic, and don't want to include config file.  Extra tables should optimize out when not needed.
    //
    generate
-   begin
+
      genvar  i;
      for (i = 0; i < SM_MAX; i = i + 1)
      begin : miss_sm_loop
@@ -679,8 +679,8 @@ module iuq_ic_miss(
           .release_sm_hold(release_sm_hold[i])
        );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    //---------------------------------------------------------------------
 
@@ -690,7 +690,7 @@ module iuq_ic_miss(
 
    // SM0 is only for non-prefetches, SM1 is for prefetches, or for new IFetches if SM1 is free and SM0 is busy (e.g. sometimes after flush)
    generate
-   begin : xhdl5
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_new_miss
@@ -827,14 +827,14 @@ module iuq_ic_miss(
                                           miss_tid_sm_l2[2*i+1][IDLE] & (~miss_tid_sm_l2[2*i][IDLE])) == 1'b1) ? 1'b1 :
                                         miss_need_hold_l2[2 * i + 1];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    //---------------------------------------------------------------------
    // Send request
    //---------------------------------------------------------------------
    generate
-   begin : xhdl12
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_request
@@ -849,8 +849,8 @@ module iuq_ic_miss(
      begin : gen_ctag_t2
        assign req_ctag_d[0] = icd_icm_tid[1];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign req_ctag_d[1] = new_miss[1] | new_miss[TAGS_USED - 1];        // prefetch or extra IFetch
 
@@ -936,14 +936,14 @@ module iuq_ic_miss(
    assign preload_r0_tag = r0_crit_qw & reld_r0_tag & (~miss_block_fp_l2) & (~miss_flushed_l2[0:TAGS_USED - 1]);
 
    generate
-   begin : xhdl13
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_preload_r0_tid
        assign preload_r0_tid[i] = preload_r0_tag[2*i] | preload_r0_tag[2*i+1];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign preload_hold_iu0 = {`THREADS{reld_r0_vld}} & preload_r0_tid;
 
@@ -955,14 +955,14 @@ module iuq_ic_miss(
    assign load_tag_no_block = load_tag[0:TAGS_USED - 1] & (~miss_block_fp_l2[0:TAGS_USED - 1]);
 
    generate
-   begin : xhdl14
+
      genvar  i;
      for (i = 0; i < `THREADS; i = i + 1)
      begin : gen_load_tid
        assign load_tid_no_block[i] = load_tag_no_block[2*i] | load_tag_no_block[2*i+1];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign icm_icd_load = load_tid_no_block;
    assign icm_icd_load_addr = load_addr;
@@ -976,15 +976,15 @@ module iuq_ic_miss(
    //---------------------------------------------------------------------
    // Note: Could latch reld_crit_qw signal from L2, but we need addr (60:61), so might as well keep whole address
    generate
-   begin : xhdl15
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_crit_qw
        assign r0_crit_qw[i] = an_ac_reld_qw_l2[58:59] == miss_addr_real_l2[i][58:59];
        assign r1_crit_qw[i] = reld_r1_qw_l2 == miss_addr_real_l2[i][58:59];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign r2_crit_qw_d = |(r1_crit_qw & reld_r1_val_l2[0:TAGS_USED - 1]);
 
@@ -1005,7 +1005,7 @@ module iuq_ic_miss(
                     hit_lru;
 
    generate
-   begin : xhdl16
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_lru
@@ -1020,8 +1020,8 @@ module iuq_ic_miss(
        // check if any other thread is writing into this spot in the cache
        assign row_match[i] = lru_valid[i] & (lru_addr[51:56] == miss_addr_real_l2[i][51:56]) & (spr_ic_cls_l2 | (lru_addr[57] == miss_addr_real_l2[i][57]));
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign val_or_match = icd_icm_row_val | row_match_way;
 
@@ -1231,28 +1231,28 @@ assign next_lru_way[3] =
                      next_lru_way;
 
    generate
-   begin : xhdl17
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_miss_way
        assign miss_way_d[i] = (select_lru[i] == 1'b1) ? next_way :
                                                         miss_way_l2[i];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    //---------------------------------------------------------------------
    // setting output signals
    //---------------------------------------------------------------------
    generate
-   begin : xhdl18
+
      genvar  i;
      for (i = 0; i < `THREADS ; i = i + 1)
      begin : gen_hold_thread
        assign icm_ics_hold_thread[i] = ((hold_tid[2*i] | ecc_block_iu0[2*i]) & miss_need_hold_l2[2*i]) | ((hold_tid[2*i+1] | ecc_block_iu0[2*i+1]) & miss_need_hold_l2[2*i+1]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    // Note: If data_write timing is bad, can switch back to using hold_all_tids, but use reld_r2
    // Hold iu0 when writing into Data this cycle or fastpath 2 cycles from now.
@@ -1340,15 +1340,15 @@ assign next_lru_way[3] =
 
    // LRU Write: Occurs 2 cycles after Data 2 data_write (64B mode) or Data6 (128B mode)
    generate
-   begin : xhdl19
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_lru_write
        assign lru_write_next_cycle_d[i] = data_write[i] & (miss_tid_sm_l2[i][DATA] & (miss_count_l2[i] == 3'b001));
        assign lru_write[i] = lru_write_l2[i] & (~miss_inval_l2[i]);
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign lru_write_d = lru_write_next_cycle_l2;
 
@@ -1368,7 +1368,7 @@ assign next_lru_way[3] =
    assign ecc_err_ue[0:TAGS_USED - 1] = new_ecc_err_ue | miss_ecc_err_ue_l2;
 
    generate
-   begin : xhdl20
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_ecc_inval
@@ -1376,8 +1376,8 @@ assign next_lru_way[3] =
             miss_tid_sm_l2[i][CHECK_ECC] & (~miss_ci_l2[i]) & (~miss_flushed_l2[i]) & (~miss_inval_l2[i]);
        assign ecc_block_iu0[i] = ecc_err[i] & (miss_tid_sm_l2[i][CHECK_ECC] | (miss_tid_sm_l2[i][DATA] & last_data[i]));  // moved last data check here from hold_tid for timing; check need_hold in hold_thread logic
      end
-   end
-   endgenerate
+   
+endgenerate
 
    // CheckECC stage
    // Non-CI: If last beat of data has bad ECC, invalidate cache & flush IU1
@@ -1398,7 +1398,7 @@ assign next_lru_way[3] =
    // Performance Events
    //---------------------------------------------------------------------
    generate
-   begin : xhdl11
+
      genvar  i;
      for (i = 0; i < SM_MAX; i = i + 1)
      begin : g11
@@ -1423,8 +1423,8 @@ assign next_lru_way[3] =
        // Prefetch cycles
        assign perf_event_d[t][2] = active_l1_miss[2*t+1] & miss_prefetch_perf_l2[t];
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign ic_perf_t0_event = perf_event_l2[0];
  `ifndef THREADS1
@@ -1835,7 +1835,7 @@ assign next_lru_way[3] =
       );
 
    generate
-   begin : xhdl21
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen_sm
@@ -1878,8 +1878,8 @@ assign next_lru_way[3] =
           .dout(miss_count_l2[i])
           );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(TAGS_USED), .INIT(0)) miss_flush_occurred_latch(
       .vd(vdd),
@@ -2034,7 +2034,7 @@ assign next_lru_way[3] =
       );
 
    generate
-   begin : xhdl22
+
      genvar  i;
      for (i = 0; i < TAGS_USED; i = i + 1)
      begin : gen
@@ -2171,8 +2171,8 @@ assign next_lru_way[3] =
          .dout(miss_way_l2[i])
          );
      end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(TAGS_USED), .INIT(0)) lru_write_next_cycle_latch(
       .vd(vdd),
@@ -2213,7 +2213,7 @@ assign next_lru_way[3] =
      );
 
    generate
-   begin : xhdl23
+
       genvar  i;
       for (i = 0; i < `THREADS; i = i + 1)
       begin : t
@@ -2236,8 +2236,8 @@ assign next_lru_way[3] =
            .dout(perf_event_l2[i])
           );
       end
-   end
-   endgenerate
+   
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0)) miss_prefetch_perf_latch(
       .vd(vdd),

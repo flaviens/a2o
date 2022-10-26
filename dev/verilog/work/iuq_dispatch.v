@@ -1640,7 +1640,7 @@ module iuq_dispatch(
 
    // Added logic for Erat invalidates to stop dispatch
    generate
-   	begin : xhdl1
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : send_cnt
@@ -1704,11 +1704,11 @@ module iuq_dispatch(
 
             assign core_block[i] = (frn_fdis_iu6_i0_core_block[i] | frn_fdis_iu6_i1_core_block[i]);
          end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : primux
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : credit_mux
@@ -1736,8 +1736,8 @@ module iuq_dispatch(
                                            ({5{high_pri_mask_l2[i]}} & fu1_high_credit_cnt_l2[i]) |
                                            ({5{med_pri_mask_l2[i]}} & fu1_med_credit_cnt_l2[i]);
          end
-      end
-   endgenerate
+      
+endgenerate
 
 `ifdef THREADS1
    // Checking to make sure we aren't in ucode so we can issue a core blocker
@@ -1777,7 +1777,7 @@ tri_xor2 sq_cmdq_send_cnt_t1_one (sq_cmdq_send_cnt_one[1],  sq_cmdq_send_cnt[1][
 `endif
 
    generate
-      begin : xhdl2
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : credit_ok
@@ -1832,8 +1832,8 @@ tri_xor2 sq_cmdq_send_cnt_t1_one (sq_cmdq_send_cnt_one[1],  sq_cmdq_send_cnt[1][
                                       (|fu1_total_credit_cnt_l2[0:3]));
 
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
 
@@ -1881,7 +1881,7 @@ tri_xor2 sq_cmdq_send_cnt_t1_one (sq_cmdq_send_cnt_one[1],  sq_cmdq_send_cnt[1][
    endgenerate
 
    generate
-      begin : xhdl3
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : send_ok
@@ -1895,8 +1895,8 @@ tri_xor2 sq_cmdq_send_cnt_t1_one (sq_cmdq_send_cnt_one[1],  sq_cmdq_send_cnt[1][
                                                    fu0_local_credit_ok[i] & fu1_local_credit_ok[i] & (low_pri_mask_l2[i] & frn_fdis_iu6_i0_vld[i])) &
                                                  (frn_fdis_iu6_i0_ucode[i][0] | (~(hold_instructions_l2))));
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign hold_instructions_d = |(mm_hold_req_d | hold_req_d | ivax_hold_req_d);
 
@@ -1929,7 +1929,7 @@ tri_xor2 sq_cmdq_send_cnt_t1_one (sq_cmdq_send_cnt_one[1],  sq_cmdq_send_cnt[1][
 
 
    generate
-      begin : local_credit_calc
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : local_credit_calc_thread
@@ -2119,12 +2119,12 @@ tri_xor2 sq_cmdq_send_cnt_t1_one (sq_cmdq_send_cnt_one[1],  sq_cmdq_send_cnt[1][
                                                   (fu1_med_credit_cnt_minus2_temp[i][0] == 1'b1) ? 5'b0 :
                                                    fu1_med_credit_cnt_minus2_temp[i];
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
    generate
-      begin : xhdl4
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : credit_proc
@@ -2321,8 +2321,8 @@ tri_xor2 sq_cmdq_send_cnt_t1_one (sq_cmdq_send_cnt_one[1],  sq_cmdq_send_cnt[1][
                end
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
 //wtf (THREADS1 is def'd)
 // iverilog sez: ../../verilog/work/iuq_dispatch.v:2322: warning: @* found no sensitivities so it will never trigger.
@@ -2534,7 +2534,7 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
 `endif
 
    generate
-      begin : pri_mask
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : pri_mask_set
@@ -2548,8 +2548,8 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
 
             assign low_pri_en[i] = (low_pri_max_l2[i] == low_pri_cnt_l2[i][0:5]) & ~iu_rv_iu6_i0_vld_int[i] & ~spr_high_pri_mask[i] & ~spr_med_pri_mask[i];
          end
-      end
-   endgenerate
+      
+endgenerate
 
    always @(*)
    begin: dual_iss_fx0_proc
@@ -2858,7 +2858,7 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
 
    // Perf counters
    generate
-      begin : perf_set
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : perf_mask_set
@@ -2924,8 +2924,8 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
             assign iu_pc_axu1_credit_ok_d[i]	=	fu1_credit_ok[i]	& fu1_local_credit_ok[i];
 
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
    assign perf_iu6_stall = perf_iu6_stall_l2;
@@ -2959,7 +2959,7 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
 
 
    generate
-      begin : xhdl7
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : thread_latches
@@ -3191,8 +3191,8 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
                .dout(fu1_med_credit_cnt_l2[i])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(5), .INIT(`RV_FX0_ENTRIES)) fx0_total_credit_cnt_latch(
       .vd(vdd),
@@ -3747,7 +3747,7 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
    );
 
    generate
-      begin : low_pri_counts
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : thread_latches
@@ -3789,8 +3789,8 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
                .dout(low_pri_max_l2[i])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0)) perf_iu6_stall_latch(
       .vd(vdd),
@@ -3812,7 +3812,7 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
    );
 
    generate
-      begin : perf_counts
+
          genvar i;
          for (i = 0; i <= `THREADS - 1; i = i + 1)
          begin : thread_latches
@@ -3911,8 +3911,8 @@ assign iu_xu_credits_returned = iu_xu_credits_returned_l2;
                .dout(perf_iu6_dispatch_axu1_l2[i])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0)) perf_iu6_fx0_credit_stall_latch(
       .vd(vdd),

@@ -48,14 +48,13 @@ module tri_inv(
    genvar 	       i;
 
    generate
-      begin : t
+
 	 for (i = 0; i < WIDTH; i = i + 1)
 	   begin : w
 
 	      not I0(y[i], a[i]);
 
 	   end // block: w
-      end
-
-   endgenerate
+      
+endgenerate
 endmodule

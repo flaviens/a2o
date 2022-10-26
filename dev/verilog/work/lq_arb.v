@@ -565,13 +565,14 @@ module lq_arb(
       end
    endgenerate
 
-   generate begin : parGen
+   generate
+
          genvar t;
          for (t = 0; t <= 15; t = t + 1) begin : parGen
             assign stq2_store_parity[t] = ^(stq2_store_data_q[t * 8:(t * 8) + 7]);
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign rel2_wrt_data = {stq2_store_data_q, stq2_store_parity};
 

@@ -1268,7 +1268,7 @@ module mmq(
 
       // input port  threadwise widening  `THREADS(n) -> `MM_THREADS(m)
       generate
-         begin : xhdl0
+
 //            genvar                                tid;
             for (tid = 0; tid <= `MM_THREADS-1; tid = tid + 1)
             begin : mmThreads
@@ -1317,11 +1317,11 @@ module mmq(
                assign xu_mm_rf1_val_sig[tid] = tidn;
             end
       end
-   end
-   endgenerate
+   
+endgenerate
 
    generate
-      begin : xhdl1
+
 //         genvar                                tid;
          for (tid = 0; tid <= `THDID_WIDTH - 1; tid = tid + 1)
          begin : mmDbgThreads
@@ -1336,11 +1336,11 @@ module mmq(
             assign lrat_mas_thdid_dbg[tid] = tidn;
          end
    end
-end
+
 endgenerate
 
 generate
-   begin : xhdl2
+
 //      genvar                                tid;
       for (tid = 0; tid <= `THDID_WIDTH - 1; tid = tid + 1)
       begin : mmperfThreads
@@ -1375,7 +1375,7 @@ generate
          assign iu_mm_ierat_flush_sig[tid] = tidn;
       end
 end
-end
+
 endgenerate
 
 //---------------------------------------------------------------------

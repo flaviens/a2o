@@ -50,14 +50,13 @@ module tri_nor2(
    genvar 	       i;
 
    generate
-      begin : t
+
 	 for (i = 0; i < WIDTH; i = i + 1)
 	   begin : w
 
 	      nor I0(y[i], a[i], b[i]);
 
 	   end // block: w
-      end
-
-   endgenerate
+      
+endgenerate
 endmodule

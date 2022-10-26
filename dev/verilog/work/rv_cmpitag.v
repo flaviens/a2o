@@ -93,7 +93,7 @@ module rv_cmpitag(
    //-------------------------------------------------------------------------------------------------------
 
    generate
-      begin : xhdl0
+
          genvar                        n;
          for (n = 0; n <= 5; n = n + 1)
            begin : q_valid_gen
@@ -101,8 +101,8 @@ module rv_cmpitag(
 
 	      assign itag_xor[n] = {~(itag ^ itag_ary[n*`ITAG_SIZE_ENC:n*`ITAG_SIZE_ENC+`ITAG_SIZE_ENC-1]), valid[n]};
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //-------------------------------------------------------------------------------------------------------
    // XOR ITAG Compares

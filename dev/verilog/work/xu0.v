@@ -572,7 +572,8 @@ module xu0
       .y(cnt_byp_ex2_rt)
    );
 
-   generate begin : bperm
+   generate
+
       genvar i;
       for (i=0;i<=7;i=i+1) begin : bprm_bit
          xu0_bprm bperm_bit(
@@ -581,8 +582,8 @@ module xu0
             .y(prm_byp_ex2_rt[56 + i])
          );
       end
-   end
-   endgenerate
+   
+endgenerate
 
 
    xu0_bcd bcd(

@@ -216,7 +216,7 @@ module rv_primux(
    // Instruction Muxing
    //-------------------------------------------------------------------------------------------------------
    generate
-      begin : xhdl
+
          for (n = 0; n <= (q_dat_width_g - 1); n = n + 1)
            begin : gendat
 
@@ -311,8 +311,8 @@ module rv_primux(
         end
    //endgenerate
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    // Level 2

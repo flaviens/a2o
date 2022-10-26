@@ -3408,12 +3408,10 @@ module mmq_tlb_ctl(
       generate
          if (`THDID_WIDTH > `MM_THREADS)
          begin : tlbctlthdNExist
-            begin : xhdl0
-               genvar                         tid;
-               for (tid = `MM_THREADS; tid <= (`THDID_WIDTH - 1); tid = tid + 1)
-               begin : tlbctlthdunused
-                  assign unused_dc_thdid[tid] = tlb_delayed_act_q[tid + 5];
-               end
+            genvar                         tid;
+            for (tid = `MM_THREADS; tid <= (`THDID_WIDTH - 1); tid = tid + 1)
+            begin : tlbctlthdunused
+               assign unused_dc_thdid[tid] = tlb_delayed_act_q[tid + 5];
             end
          end
       endgenerate

@@ -93,7 +93,7 @@ module tri_event_mux1t(
 //=====================================================================
    // For each output bit, decode its select_bits to select the input mux it's using
    generate
-      begin : xhdl0
+
 	 genvar      X;
 	 for (X = 0; X <= EVENTS_OUT - 1; X = X + 1)
 	 begin : decode
@@ -112,36 +112,34 @@ module tri_event_mux1t(
 	       assign inMuxDec[X * EVENTS_IN:X * EVENTS_IN + 63] = decode_a(select_bits[X * INCR:X * INCR + 5]);
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
    // For each output bit, inMux decodes gate the selected unit event input; or event_bus_in when decode=0
    generate
-      begin : xhdl2
+
          genvar      X;
          for (X = 0; X <= EVENTS_OUT - 1; X = X + 1)
          begin : inpMux
 
                   assign inMuxOut[X * EVENTS_IN + 0] = (inMuxDec[X * EVENTS_IN + 0] & event_bus_in[X]) ;
 
-            begin : xhdl1
-               genvar      I;
-               for (I = 1; I <= EVENTS_IN - 1; I = I + 1)
-               begin : eventSel
+            genvar      I;
+            for (I = 1; I <= EVENTS_IN - 1; I = I + 1)
+            begin : eventSel
 
-                  assign inMuxOut[X * EVENTS_IN + I] = (inMuxDec[X * EVENTS_IN + I] & unit_events_in[I]) ;
+               assign inMuxOut[X * EVENTS_IN + I] = (inMuxDec[X * EVENTS_IN + I] & unit_events_in[I]) ;
 
-               end
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
    // ORing the input mux outputs to drive each event output bit.
    // Only one selected at a time by each output bit's inMux decode value.
    generate
-      begin : xhdl5
+
          genvar      X;
          for (X = 0; X <= EVENTS_OUT - 1; X = X + 1)
          begin : bitOutHi
@@ -160,7 +158,7 @@ module tri_event_mux1t(
                assign event_bus_out[X] = (|inMuxOut[X * EVENTS_IN:X * EVENTS_IN + 63]);
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
 endmodule

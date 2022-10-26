@@ -295,7 +295,7 @@ module iuq_rn_map #(
    assign spec_map_itag_act = 1'b1;
 
    generate
-      begin : xhdl1
+
          genvar i;
          for (i = 0; i <= ARCHITECTED_REGISTER_DEPTH - 1; i = i + 1)
          begin : map_set0
@@ -329,11 +329,11 @@ module iuq_rn_map #(
                end
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-   begin : write_ptr_calc
+
    	genvar i;
    	for(i = 0; i <= (REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH - 1); i = i + 1)
    	begin : write_ptr_set
@@ -343,15 +343,15 @@ module iuq_rn_map #(
    		else
    			write_ptr[i] = 1'b0;
    		end
-   	end
-   endgenerate
+   	
+endgenerate
    assign write_ptr_p1 = {REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH{pool_free_0_v_l2 & pool_free_1_v_l2}} &
                          ({write_ptr[REGISTER_RENAME_DEPTH-ARCHITECTED_REGISTER_DEPTH-1], write_ptr[0:REGISTER_RENAME_DEPTH-ARCHITECTED_REGISTER_DEPTH-2]});
 
    assign write_ptr_value = ({pool_free_0_v_l2, pool_free_1_v_l2} == 2'b01) ? pool_free_1_l2 :
                              pool_free_0_l2;
    generate
-   	begin : xhdl2
+
    		genvar i;
          for (i = 0; i <= REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH - 1; i = i + 1)
          begin : buffer_pool_gen
@@ -362,8 +362,8 @@ module iuq_rn_map #(
          		                    ({STORAGE_WIDTH{write_ptr_p1[i]}} & pool_free_1_l2);
             end
          end
-      end
-   endgenerate
+      
+endgenerate
 
 	iuq_rn_map_inc #(.SIZE(STORAGE_WIDTH), .WRAP(REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH - 1)) read_ptr_inc0(
 		.inc({take_a, take_b}),
@@ -409,7 +409,7 @@ module iuq_rn_map #(
 
    // Creating 1 hot muxing from pointers
    generate
-   begin : read_ptr_calc
+
    	genvar i;
    	for(i = 0; i <= (REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH - 1); i = i + 1)
    	begin : read_ptr_set
@@ -420,8 +420,8 @@ module iuq_rn_map #(
    		else
    			read_ptr[i] = 1'b0;
    	end
-   end
-   endgenerate
+   
+endgenerate
    assign read_ptr_p1 = {read_ptr[REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH - 1], read_ptr[0:REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH - 2]};
 
    // OUTPUTS
@@ -444,7 +444,7 @@ module iuq_rn_map #(
    end
 
    generate
-	   begin : xhdl3
+
 	   	genvar i;
 	   	for (i = 0; i <= ARCHITECTED_REGISTER_DEPTH - 1; i = i + 1)
 	   	begin : comp_map0
@@ -468,11 +468,11 @@ module iuq_rn_map #(
                .dout(comp_map_l2[i])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl4
+
          genvar                                                      i;
          for (i = 0; i <= ARCHITECTED_REGISTER_DEPTH - 1; i = i + 1)
          begin : spec_map0
@@ -516,11 +516,11 @@ module iuq_rn_map #(
                .dout(spec_map_itag_l2[i])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl5
+
          genvar                                                      i;
          for (i = 0; i <= REGISTER_RENAME_DEPTH - ARCHITECTED_REGISTER_DEPTH - 1; i = i + 1)
          begin : buffer_pool_lat
@@ -544,8 +544,8 @@ module iuq_rn_map #(
                .dout(buffer_pool_l2[i])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
    tri_rlmreg_p #(.WIDTH(STORAGE_WIDTH), .INIT(0)) read_ptr_latch(

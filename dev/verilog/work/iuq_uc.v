@@ -1473,7 +1473,7 @@ assign uc_legal =
    assign iu4_stage_act = data_valid;  // ??? Removed "not flush and not skip" from act.  Do we want to add in some form of skip check?
 
    generate
-   begin : xhdl1
+
      genvar  i;
      for (i = 0; i <= 1; i = i + 1)
      begin : gen_iu4_val
@@ -1481,8 +1481,8 @@ assign uc_legal =
                                       (iu4_valid_l2[i] & iu4_stall)) &
                      (~(iu_flush_l2 | br_iu_redirect_l2));     // clear on flush
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu4_ifar_d = ucode_ifar;
    assign iu4_ext0_d = ucode_ext_even;
@@ -1497,14 +1497,14 @@ assign uc_legal =
    // Overflow latches
    assign iu4_ov_stage_act = iu4_valid_l2[0] & (~iu4_ov_valid_l2[0]);
    generate
-   begin : xhdl2
+
      genvar  i;
      for (i = 0; i <= 1; i = i + 1)
      begin : gen_ov_valid
        always @(*) iu4_ov_valid_d[i] = (iu4_ov_valid_l2[i] | (iu4_valid_l2[i] & (~iu4_ov_valid_l2[0]))) & (~ib_uc_rdy) & (~(iu_flush_l2 | br_iu_redirect_l2));
      end
-   end
-   endgenerate
+   
+endgenerate
 
    assign iu4_ov_ifar_d = iu4_ifar_l2;
    assign iu4_ov_ext0_d = iu4_ext0_l2;
@@ -1518,7 +1518,7 @@ assign uc_legal =
    //     so that we don't lose part of ifar on flush
 
    generate
-   begin
+
      if (uc_ifar >= `EFF_IFAR_WIDTH)
      begin : ifara
        always @(*) uc_ib_ifar0 = iu4_ifar_out[62 - `EFF_IFAR_WIDTH:61];
@@ -1535,8 +1535,8 @@ assign uc_legal =
          uc_ib_ifar1[62 - uc_ifar:61] = {iu4_ifar_out[62 - uc_ifar:60], 1'b1};
        end
      end
-   end
-   endgenerate
+   
+endgenerate
 
    always @*
    begin: ib_proc

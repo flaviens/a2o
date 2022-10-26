@@ -54,7 +54,7 @@ module tri_aoi21(
    wire [0:WIDTH-1]    outA;
 
    generate
-      begin : t
+
 	 for (i = 0; i < WIDTH; i = i + 1)
 	   begin : w
 
@@ -62,7 +62,6 @@ module tri_aoi21(
 	      nor I2(y[i], outA[i], b0[i]);
 
 	   end // block: w
-      end
-
-   endgenerate
+      
+endgenerate
 endmodule

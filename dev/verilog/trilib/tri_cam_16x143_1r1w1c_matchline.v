@@ -155,7 +155,7 @@ module tri_cam_16x143_1r1w1c_matchline(
                                 {addr_in[0:51], comp_pgsize[0:2], comp_class[0:1], comp_extclass[0:1], comp_state[0:1], comp_pid[0:7], comp_thdid[0:3]}));
 
    generate
-   begin
+
      if (NUM_PGSIZES == 8)
      begin : numpgsz8
        // tie off unused signals
@@ -466,6 +466,6 @@ module tri_cam_16x143_1r1w1c_matchline(
                     thdid_match &       //  ThdID compare
                     pid_match &         //  PID compare
                     entry_v;            //  Valid
-   end
-   endgenerate
+   
+endgenerate
 endmodule

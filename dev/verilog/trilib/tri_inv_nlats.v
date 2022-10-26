@@ -74,7 +74,7 @@ module tri_inv_nlats(
    parameter [0:WIDTH-1]          ZEROS = {WIDTH{1'b0}};
 
    generate
-   begin
+
       wire                          sreset;
       wire [0:WIDTH-1]              int_din;
       reg [0:WIDTH-1]               int_dout;
@@ -117,6 +117,6 @@ module tri_inv_nlats(
       assign scanout = ZEROS;
 
       assign unused = | {vd, gd, scanin};
-   end
-   endgenerate
+   
+endgenerate
 endmodule

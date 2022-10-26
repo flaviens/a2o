@@ -112,7 +112,7 @@ module tri_err_rpt(
             );
 
    generate
-   begin
+
       // mask
      if (SHARE_MASK == 1'b0) begin
        assign mask_lt = mask_initv;
@@ -133,6 +133,6 @@ module tri_err_rpt(
      end
 
      assign unused = | {mode_dclk, mode_lclk, mode_scan_in, unused_q_b};
-   end
-   endgenerate
+   
+endgenerate
 endmodule

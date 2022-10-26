@@ -772,7 +772,7 @@ assign ex1_vld_d = (rv_br_ex0_fusion | |(ex1_vld_q) ? ex0_vld & (~iu_br_flush_q)
                        ex2_bd;
 
       generate
-         begin : xhdl1
+
             genvar                        i;
             for (i = 0; i <= `THREADS - 1; i = i + 1)
             begin : thread_ifar
@@ -786,8 +786,8 @@ assign ex1_vld_d = (rv_br_ex0_fusion | |(ex1_vld_q) ? ex0_vld & (~iu_br_flush_q)
 		assign br_upper_ifar_mux[i] = (ex2_vld_q[i] ? br_upper_ifar_q[i] : {`EFF_IFAR_ARCH-`EFF_IFAR_WIDTH{1'b0}} ) | br_upper_ifar_mux[i - 1];
             end
       end
-   end
-   endgenerate
+   
+endgenerate
 
    assign ex2_ifar = {br_upper_ifar_mux[`THREADS - 1], ex2_ifar_q[62 - `EFF_IFAR_WIDTH:61]};
 
@@ -799,7 +799,7 @@ assign ex1_vld_d = (rv_br_ex0_fusion | |(ex1_vld_q) ? ex0_vld & (~iu_br_flush_q)
    assign ex2_nia_pre = ex2_ifar + 1;
 
    generate
-      begin : xhdl2
+
          genvar                        i;
          for (i = (62 - `EFF_IFAR_ARCH); i <= 61; i = i + 1)
          begin : ex3NIAMask
@@ -812,7 +812,7 @@ assign ex1_vld_d = (rv_br_ex0_fusion | |(ex1_vld_q) ? ex0_vld & (~iu_br_flush_q)
             assign ex2_nia[i] = ex2_nia_pre[i];
          end
    end
-end
+
 endgenerate
 
 assign ex3_bta_d = ex2_bta;
@@ -821,7 +821,7 @@ assign ex3_nia_d = ex2_nia;
 assign ex3_bta_pre = (ex3_is_bclr_q == 1'b1 ? ex3_lr[62 - `EFF_IFAR_ARCH:61] : 0 ) | (ex3_is_bcctr_q == 1'b1 ? ex3_ctr[62 - `EFF_IFAR_ARCH:61] : 0 ) | (ex3_is_bctar_q == 1'b1 ? ex3_lr[62 - `EFF_IFAR_ARCH:61] : 0 ) | (ex3_is_b_q == 1'b1 | ex3_is_bc_q == 1'b1 ? ex3_bta_q[62 - `EFF_IFAR_ARCH:61] : 0 );
 
 generate
-   begin : xhdl3
+
       genvar                        i;
       for (i = (62 - `EFF_IFAR_ARCH); i <= 61; i = i + 1)
       begin : ex3BTAMask
@@ -834,7 +834,7 @@ generate
          assign ex3_bta[i] = ex3_bta_pre[i];
       end
 end
-end
+
 endgenerate
 
 	assign ex4_bta_d = (ex4_taken_d == 1'b1 ? ex3_bta[62 - `EFF_IFAR_ARCH:61] : 0 ) | (ex4_taken_d == 1'b0 ? ex3_nia_q[62 - `EFF_IFAR_ARCH:61] : 0 );
@@ -846,7 +846,7 @@ assign ex3_nia = ex3_nia_q;
 //-----------------------------------------------
 
 generate
-begin : xhdl4
+
    genvar                        i;
    for (i = 0; i <= (`THREADS - 1); i = i + 1)
    begin : br_thread
@@ -865,7 +865,7 @@ begin : xhdl4
       assign br_upper_ifar_d[i] = iu_br_flush_ifar_q[i];
 
    end
-end
+
 endgenerate
 
 //-----------------------------------------------
@@ -987,7 +987,8 @@ assign br_iu_perf_events = ex4_perf_event_q;
 //5: mispredicted branch target (within current address range)
 //6: mispredicted branch target (outside current address range)
 
-generate begin : perf_event
+generate
+
    genvar  t,e;
    for (e=0;e<=3;e=e+1) begin : thread
       for (t=0;t<=`THREADS-1;t=t+1) begin : thread
@@ -1001,7 +1002,7 @@ generate begin : perf_event
 (spr_xesr2[4*e+16*t:4*e+16*t+3] == 4'd6 ? (perf_event_en[t] & ex4_redirect_d[t] & (ex4_taken_d & ex3_pred_q & (ex3_bta[62 - `EFF_IFAR_ARCH:61 - `EFF_IFAR_WIDTH] != br_upper_ifar_q[t]))) : 1'b0);
       end
    end
-end
+
 endgenerate
 
 //-----------------------------------------------
@@ -1048,7 +1049,7 @@ tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0)) iu_br_flush_latch(
 );
 
 generate
-   begin : xhdl5
+
       genvar                        i;
       for (i = 0; i <= `THREADS - 1; i = i + 1)
       begin : thread_regs
@@ -1137,8 +1138,8 @@ generate
             .dout(ex4_itag_saved_q[i])
          );
       end
-   end
-   endgenerate
+   
+endgenerate
 
 
    tri_rlmreg_p #(.WIDTH(4), .INIT(0)) ex3_cr1_latch(

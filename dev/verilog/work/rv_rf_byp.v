@@ -777,7 +777,7 @@ module rv_rf_byp(
    assign fxu1_s3_d = {(rv_byp_fx1_vld & (~(cp_flush_q))), rv_byp_fx1_s3_t};
 
    generate
-      begin : xhdl1
+
          genvar                                         i;
          for (i = 1; i <= 4; i = i + 1)
            begin : fxu0_pipe_t_gen
@@ -785,8 +785,8 @@ module rv_rf_byp(
               assign fxu0_t2_d[i] = {((fxu0_t2_q[i - 1][0:`THREADS - 1] | fx0_byp_rdy_nxt[i-1]) & (~(cp_flush_q))), fxu0_t2_q[i - 1][`THREADS:elmnt_width - 1]};
               assign fxu0_t3_d[i] = {((fxu0_t3_q[i - 1][0:`THREADS - 1] | fx0_byp_rdy_nxt[i-1]) & (~(cp_flush_q))), fxu0_t3_q[i - 1][`THREADS:elmnt_width - 1]};
            end
-      end
-   endgenerate
+      
+endgenerate
    // Multiplier Recirc
               assign fxu0_t1_d[5] = (({((fxu0_t1_q[4][0:`THREADS - 1] | fx0_byp_rdy_nxt[4]) & (~(cp_flush_q))), fxu0_t1_q[4][`THREADS:elmnt_width - 1]}) & ({elmnt_width{~fx0_mult_recirc}})) |
 				    (({((fxu0_t1_q[5][0:`THREADS - 1] | fx0_byp_rdy_nxt[5]) & (~(cp_flush_q))), fxu0_t1_q[5][`THREADS:elmnt_width - 1]}) & ({elmnt_width{fx0_ex5_mult_recirc}})) |
@@ -803,7 +803,7 @@ module rv_rf_byp(
 
 
    generate
-      begin : xhdla
+
          genvar                                         i;
          for (i = 6; i <= 12; i = i + 1)
            begin : fxu0_pipe_t_gen
@@ -811,22 +811,22 @@ module rv_rf_byp(
               assign fxu0_t2_d[i] = {((fxu0_t2_q[i - 1][0:`THREADS - 1] | fx0_byp_rdy_nxt[i-1]) & (~(cp_flush_q))), fxu0_t2_q[i - 1][`THREADS:elmnt_width - 1]};
               assign fxu0_t3_d[i] = {((fxu0_t3_q[i - 1][0:`THREADS - 1] | fx0_byp_rdy_nxt[i-1]) & (~(cp_flush_q))), fxu0_t3_q[i - 1][`THREADS:elmnt_width - 1]};
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl3
+
          genvar                                         i;
          for (i = 1; i <= 8; i = i + 1)
            begin : lq_pipe_t_gen
               assign lq_t1_d[i] = {(lq_t1_q[i - 1][0:`THREADS - 1] & (~(cp_flush_q))), lq_t1_q[i - 1][`THREADS:elmnt_width - 1]};
               assign lq_t3_d[i] = {(lq_t3_q[i - 1][0:`THREADS - 1] & (~(cp_flush_q))), lq_t3_q[i - 1][`THREADS:elmnt_width - 1]};
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl4
+
          genvar                                         i;
          for (i = 1; i <= 7; i = i + 1)
            begin : fxu1_pipe_t_gen
@@ -834,27 +834,27 @@ module rv_rf_byp(
               assign fxu1_t2_d[i] = {((fxu1_t2_q[i - 1][0:`THREADS - 1] | fx1_byp_rdy_nxt[i-1]) & (~(cp_flush_q))), fxu1_t2_q[i - 1][`THREADS:elmnt_width - 1]};
               assign fxu1_t3_d[i] = {((fxu1_t3_q[i - 1][0:`THREADS - 1] | fx1_byp_rdy_nxt[i-1]) & (~(cp_flush_q))), fxu1_t3_q[i - 1][`THREADS:elmnt_width - 1]};
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign rel_vld_d[0] = (lq_rv_itag2_vld & (~(cp_flush_q)));
    assign rel_itag_d[0] = lq_rv_itag2;
    generate
-      begin : xhdl5
+
          genvar                                         i;
          for (i = 1; i <= 3; i = i + 1)
            begin : rel_pipe_t_gen
               assign rel_vld_d[i] = (rel_vld_q[i - 1] & (~(cp_flush_q)));
               assign rel_itag_d[i] = rel_itag_q[i - 1];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //----------------------------------------------------------------------------------------------------------------------------------------
    // FXU0 Compares
    //----------------------------------------------------------------------------------------------------------------------------------------
    generate
-      begin : xhdl6
+
          genvar                                         i;
          for (i = 1; i <= 11; i = i + 1)
            begin : comp_fxu0_fxu0
@@ -871,11 +871,11 @@ module rv_rf_byp(
               assign fxu0_s3_fxu0_t2_match[i] = (fxu0_s3_q == fxu0_t2_q[i]) & fxu0_s3_fxu0_itag_match[i];		// Source 3 w/ FXU0 T2 Pipe
               assign fxu0_s3_fxu0_t3_match[i] = (fxu0_s3_q == fxu0_t3_q[i]) & fxu0_s3_fxu0_itag_match[i];		// Source 3 w/ FXU0 T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhd7
+
          genvar                                         i;
          for (i = 4; i <= 8; i = i + 1)
            begin : comp_fxu0_lq
@@ -892,11 +892,11 @@ module rv_rf_byp(
               assign fxu0_s3_lq_t2_match[i] = 1'b0;		// Source 3 w/ LQ T2 Pipe
               assign fxu0_s3_lq_t3_match[i] = (fxu0_s3_q == lq_t3_q[i]) & fxu0_s3_lq_itag_match[i];		// Source 3 w/ LQ T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl8
+
          genvar                                         i;
          for (i = 1; i <= 6 ; i = i + 1)
            begin : comp_fxu0_fxu1
@@ -913,11 +913,11 @@ module rv_rf_byp(
               assign fxu0_s3_fxu1_t2_match[i] = (fxu0_s3_q == fxu1_t2_q[i]) & fxu0_s3_fxu1_itag_match[i];		// Source 3 w/ FXU1 T2 Pipe
               assign fxu0_s3_fxu1_t3_match[i] = (fxu0_s3_q == fxu1_t3_q[i]) & fxu0_s3_fxu1_itag_match[i];		// Source 3 w/ FXU1 T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl9
+
          genvar                                         i;
          for (i = 2; i <= 3; i = i + 1)
            begin : comp_fxu0_rel
@@ -928,8 +928,8 @@ module rv_rf_byp(
               assign fxu0_s2_rel_match[i] = (fxu0_s2_q == ({rel_vld_q[i], `gpr_t})) & fxu0_s2_rel_itag_match[i];		// Source 1 w/ rel T1 Pipe
               assign fxu0_s3_rel_match[i] = (fxu0_s3_q == ({rel_vld_q[i], `gpr_t})) & fxu0_s3_rel_itag_match[i];		// Source 1 w/ rel T1 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //----------------------------------------------------------------------------------------------------------------------------------------
    // Assign Outputs to FXU0   -  Fastest back2back is 1->6 (4 bubbles)
@@ -964,7 +964,7 @@ module rv_rf_byp(
    // LQ Compares
    //----------------------------------------------------------------------------------------------------------------------------------------
    generate
-      begin : xhdl10
+
          genvar                                         i;
          for (i = 2; i <= 12; i = i + 1)
            begin : comp_lq_fxu0
@@ -977,11 +977,11 @@ module rv_rf_byp(
               assign lq_s2_fxu0_t2_match[i] = (lq_s2_q == fxu0_t2_q[i]) & lq_s2_fxu0_itag_match[i];		// Source 2 w/ FXU0 T2 Pipe
               assign lq_s2_fxu0_t3_match[i] = (lq_s2_q == fxu0_t3_q[i]) & lq_s2_fxu0_itag_match[i];		// Source 2 w/ FXU0 T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl11
+
          genvar                                         i;
          for (i = 4; i <= 8; i = i + 1)
            begin : comp_lq_lq
@@ -994,11 +994,11 @@ module rv_rf_byp(
               assign lq_s2_lq_t2_match[i] = 1'b0;		// Source 2 w/ LQ T2 Pipe
               assign lq_s2_lq_t3_match[i] = (lq_s2_q == lq_t3_q[i]) & lq_s2_lq_itag_match[i];		// Source 2 w/ LQ T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl12
+
          genvar                                         i;
          for (i = 2; i <= 7; i = i + 1)
            begin : comp_lq_fxu1
@@ -1011,11 +1011,11 @@ module rv_rf_byp(
               assign lq_s2_fxu1_t2_match[i] = (lq_s2_q == fxu1_t2_q[i]) & lq_s2_fxu1_itag_match[i];		// Source 2 w/ FXU1 T2 Pipe
               assign lq_s2_fxu1_t3_match[i] = (lq_s2_q == fxu1_t3_q[i]) & lq_s2_fxu1_itag_match[i];		// Source 2 w/ FXU1 T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl13
+
          genvar                                         i;
          for (i = 2; i <= 3 ; i = i + 1)
            begin : comp_lq_rel
@@ -1024,8 +1024,8 @@ module rv_rf_byp(
               assign lq_s1_rel_match[i] = (lq_s1_q == ({rel_vld_q[i], `gpr_t})) & lq_s1_rel_itag_match[i];		// Source 1 w/ rel T1 Pipe
               assign lq_s2_rel_match[i] = (lq_s2_q == ({rel_vld_q[i], `gpr_t})) & lq_s2_rel_itag_match[i];		// Source 1 w/ rel T1 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //----------------------------------------------------------------------------------------------------------------------------------------
    // Assign Outputs to LQ   -- Remove last bit, that is for write-back case
@@ -1059,7 +1059,7 @@ module rv_rf_byp(
    // FXU1 Compares
    //----------------------------------------------------------------------------------------------------------------------------------------
    generate
-      begin : xhdl14
+
          genvar                                         i;
          for (i = 1; i <= 11; i = i + 1)
            begin : comp_fxu1_fxu0
@@ -1076,11 +1076,11 @@ module rv_rf_byp(
               assign fxu1_s3_fxu0_t2_match[i] = (fxu1_s3_q == fxu0_t2_q[i]) & fxu1_s3_fxu0_itag_match[i];		// Source 3 w/ FXU0 T2 Pipe
               assign fxu1_s3_fxu0_t3_match[i] = (fxu1_s3_q == fxu0_t3_q[i]) & fxu1_s3_fxu0_itag_match[i];		// Source 3 w/ FXU0 T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl15
+
          genvar                                         i;
          for (i = 4; i <= 8; i = i + 1)
            begin : comp_fxu1_lq
@@ -1097,11 +1097,11 @@ module rv_rf_byp(
               assign fxu1_s3_lq_t2_match[i] = 1'b0;		// Source 3 w/ LQ T2 Pipe
               assign fxu1_s3_lq_t3_match[i] = (fxu1_s3_q == lq_t3_q[i]) & fxu1_s3_lq_itag_match[i];		// Source 3 w/ LQ T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl16
+
          genvar                                         i;
          for (i = 1; i <= 6; i = i + 1)
            begin : comp_fxu1_fxu1
@@ -1118,11 +1118,11 @@ module rv_rf_byp(
               assign fxu1_s3_fxu1_t2_match[i] = (fxu1_s3_q == fxu1_t2_q[i]) & fxu1_s3_fxu1_itag_match[i];		// Source 3 w/ FXU1 T2 Pipe
               assign fxu1_s3_fxu1_t3_match[i] = (fxu1_s3_q == fxu1_t3_q[i]) & fxu1_s3_fxu1_itag_match[i];		// Source 3 w/ FXU1 T3 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl17
+
          genvar                                         i;
          for (i = 2; i <= 3 ; i = i + 1)
            begin : comp_fxu1_rel
@@ -1133,8 +1133,8 @@ module rv_rf_byp(
               assign fxu1_s2_rel_match[i] = (fxu1_s2_q == ({rel_vld_q[i], `gpr_t})) & fxu1_s2_rel_itag_match[i];		// Source 1 w/ rel T1 Pipe
               assign fxu1_s3_rel_match[i] = (fxu1_s3_q == ({rel_vld_q[i], `gpr_t})) & fxu1_s3_rel_itag_match[i];		// Source 1 w/ rel T1 Pipe
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //----------------------------------------------------------------------------------------------------------------------------------------
    // Assign Outputs to FXU1   -- Remove last bit, that is for write-back case
@@ -1223,14 +1223,14 @@ module rv_rf_byp(
 			  (fx0_itag_q[7] & {`ITAG_SIZE_ENC{( fx0_ex7_mult_recirc)}}) ;
 
    generate
-      begin : xhdl18i
+
          genvar                                         i;
          for (i = 6; i <= 12; i = i + 1)
            begin : fxu0_itag_d_gen
               assign fx0_itag_d[i]  = fx0_itag_q[i-1];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // Ilat Pipe
    assign fx0_ex0_ilat_d = rv_byp_fx0_ilat;
@@ -1407,23 +1407,23 @@ module rv_rf_byp(
    assign fx1_itag_d[0] = rv_byp_fx1_itag;
    assign fx1_vld_d[0] = rv_byp_fx1_vld & (~cp_flush_q);
    generate
-      begin : xhdl19v
+
          genvar                                         i;
          for (i = 1; i <= 6; i = i + 1)
            begin : fxu1_vld_d_gen
               assign fx1_vld_d[i] = fx1_vld_q[i - 1] & (~cp_flush_q);
            end
-      end
-   endgenerate
+      
+endgenerate
    generate
-      begin : xhdl19
+
          genvar                                         i;
          for (i = 1; i <= 7; i = i + 1)
            begin : fxu1_itag_d_gen
               assign fx1_itag_d[i] = fx1_itag_q[i - 1];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign fx1_abort_d[3] = fx1_ex2_abort;
    assign fx1_abort_d[4] = fx1_abort_q[3];
@@ -1538,14 +1538,14 @@ module rv_rf_byp(
 
    assign lq_itag_d[0] = rv_byp_lq_itag;
    generate
-      begin : xhdl20
+
          genvar                                         i;
          for (i = 1; i <= 8; i = i + 1)
            begin : lq_itag_d_gen
               assign lq_itag_d[i] = lq_itag_q[i - 1];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign lq_act[0] = |(rv_byp_lq_vld);
    assign lq_act[1] = |(lq_vld_q[0]);
@@ -1573,7 +1573,7 @@ module rv_rf_byp(
    // Latches
    //-------------------------------------------------------------------
    generate
-      begin : xhdl21
+
          genvar                                         i;
          for (i = 0; i <= 12; i = i + 1)
            begin : fxu0_t1_gen
@@ -1598,11 +1598,11 @@ module rv_rf_byp(
 			    .dout(fxu0_t1_q[i])
 			    );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl22
+
          genvar                                         i;
          for (i = 0; i <= 12; i = i + 1)
            begin : fxu0_t2_gen
@@ -1627,11 +1627,11 @@ module rv_rf_byp(
 			    .dout(fxu0_t2_q[i])
 			    );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin
+
          genvar                                         i;
          for (i = 0; i <= 12; i = i + 1)
            begin : fxu0_t3_gen
@@ -1656,8 +1656,8 @@ module rv_rf_byp(
 			    .dout(fxu0_t3_q[i])
 			    );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(elmnt_width), .INIT(0), .NEEDS_SRESET(1))
    fxu0_s1_latch(
@@ -1720,7 +1720,7 @@ module rv_rf_byp(
 		 );
 
    generate
-      begin : xhdl24
+
          genvar                                         i;
          for (i = 0; i <= 8; i = i + 1)
            begin : lq_t1_gen
@@ -1745,12 +1745,12 @@ module rv_rf_byp(
 			  .dout(lq_t1_q[i])
 			  );
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    generate
-      begin : xhdl26
+
          genvar                                         i;
          for (i = 0; i <= 8; i = i + 1)
            begin : lq_t3_gen
@@ -1775,8 +1775,8 @@ module rv_rf_byp(
                           .dout(lq_t3_q[i])
                           );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(elmnt_width), .INIT(0), .NEEDS_SRESET(1))
    lq_s1_latch(
@@ -1819,7 +1819,7 @@ module rv_rf_byp(
                );
 
    generate
-      begin : xhdl27
+
          genvar                                         i;
          for (i = 0; i <= 7; i = i + 1)
            begin : fxu1_t1_gen
@@ -1844,11 +1844,11 @@ module rv_rf_byp(
                             .dout(fxu1_t1_q[i])
                             );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl28
+
          genvar                                         i;
          for (i = 0; i <= 7; i = i + 1)
            begin : fxu1_t2_gen
@@ -1873,11 +1873,11 @@ module rv_rf_byp(
                             .dout(fxu1_t2_q[i])
                             );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl29
+
          genvar                                         i;
          for (i = 0; i <= 7; i = i + 1)
            begin : fxu1_t3_gen
@@ -1902,8 +1902,8 @@ module rv_rf_byp(
                             .dout(fxu1_t3_q[i])
                             );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(elmnt_width), .INIT(0), .NEEDS_SRESET(1))
    fxu1_s1_latch(
@@ -1966,7 +1966,7 @@ module rv_rf_byp(
                  );
 
    generate
-      begin : xhdl77
+
          genvar                                         i;
          for (i = 0; i <= 3 ; i = i + 1)
            begin : rel_gen
@@ -2012,8 +2012,8 @@ module rv_rf_byp(
                              .dout(rel_itag_q[i])
                              );
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0))
@@ -2037,7 +2037,7 @@ module rv_rf_byp(
                 );
 
    generate
-      begin : xhdl78b
+
          genvar                                         i;
          for (i = 1; i <= 7; i = i + 1)
            begin : fxu0_itagv_gen
@@ -2063,10 +2063,10 @@ module rv_rf_byp(
                           );
 
            end
-      end
-   endgenerate
+      
+endgenerate
    generate
-      begin : xhdl78v
+
          genvar                                         i;
          for (i = 0; i <= 11; i = i + 1)
            begin : fxu0_itagv_gen
@@ -2092,10 +2092,10 @@ module rv_rf_byp(
                           );
 
            end
-      end
-   endgenerate
+      
+endgenerate
    generate
-      begin : xhdl78i
+
          genvar                                         i;
          for (i = 0; i <= 12; i = i + 1)
            begin : fxu0_itag_gen
@@ -2121,8 +2121,8 @@ module rv_rf_byp(
                            .dout(fx0_itag_q[i])
                            );
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    tri_rlmreg_p #(.WIDTH(4), .INIT(0))
@@ -2784,7 +2784,7 @@ module rv_rf_byp(
                             );
 
    generate
-      begin : xab0
+
          genvar                                         i;
          for (i = 3; i <= 4; i = i + 1)
            begin : fx0xab
@@ -2810,12 +2810,11 @@ module rv_rf_byp(
                             );
 
 	   end // block: fx0xab
-      end // block: xab0
       endgenerate
 
 
    generate
-      begin : xhdl70v
+
          genvar                                         i;
          for (i = 0; i <= 6; i = i + 1)
            begin : fxu1_vld_gen
@@ -2841,11 +2840,10 @@ module rv_rf_byp(
                           );
 
            end
-      end
-   endgenerate
+endgenerate
 
    generate
-      begin : xhdl70
+
          genvar                                         i;
          for (i = 0; i <= 7; i = i + 1)
 
@@ -2870,8 +2868,8 @@ module rv_rf_byp(
                            .dout(fx1_itag_q[i])
                            );
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    tri_rlmreg_p #(.WIDTH(3), .INIT(0))
@@ -3307,7 +3305,7 @@ module rv_rf_byp(
                             );
 
    generate
-      begin : xab1
+
          genvar                                         i;
          for (i = 3; i <= 4; i = i + 1)
            begin : fx1xab
@@ -3333,7 +3331,6 @@ module rv_rf_byp(
                             );
 
 	   end // block: fx0xab
-      end // block: xab0
       endgenerate
 
    tri_rlmreg_p #(.WIDTH(`ITAG_SIZE_ENC), .INIT(0))
@@ -3460,7 +3457,7 @@ module rv_rf_byp(
                          );
 
    generate
-      begin : xhdl80
+
          genvar                                         i;
          for (i = 0; i <= 7; i = i + 1)
            begin : lq_vld_gen
@@ -3484,12 +3481,11 @@ module rv_rf_byp(
                            .din(lq_vld_d[i]),
                            .dout(lq_vld_q[i])
                            );
-           end
-      end
-   endgenerate
+           end           
+endgenerate
 
    generate
-      begin : xhdl81
+
          genvar                                         i;
          for (i = 0; i <= `LQ_LOAD_PIPE_END; i = i + 1)
            begin : lq_itag_gen
@@ -3514,8 +3510,8 @@ module rv_rf_byp(
                           .dout(lq_itag_q[i])
                           );
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
 

@@ -319,7 +319,8 @@ assign dcarr_rd_parity_wh = dcarr_rd_data[1136:1151];
 // #############################################################################################
 // Way A 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWA
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWA
       if (b == 0) begin : sgrp
@@ -387,14 +388,15 @@ generate begin : l1dcrotrWA
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Way B 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWB
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWB
       if (b == 0) begin : sgrp
@@ -462,14 +464,15 @@ generate begin : l1dcrotrWB
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Way C 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWC
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWC
       if (b == 0) begin : sgrp
@@ -537,14 +540,15 @@ generate begin : l1dcrotrWC
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Way D 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWD
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWD
       if (b == 0) begin : sgrp
@@ -612,14 +616,15 @@ generate begin : l1dcrotrWD
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Way E 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWE
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWE
       if (b == 0) begin : sgrp
@@ -687,14 +692,15 @@ generate begin : l1dcrotrWE
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Way F 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWF
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWF
       if (b == 0) begin : sgrp
@@ -762,14 +768,15 @@ generate begin : l1dcrotrWF
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Way G 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWG
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWG
       if (b == 0) begin : sgrp
@@ -837,14 +844,15 @@ generate begin : l1dcrotrWG
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Way H 16 Byte Rotator
 // #############################################################################################
-generate begin : l1dcrotrWH
+generate
+
    genvar b;
    for (b = 0; b <= 7; b = b + 1) begin : l1dcrotrWH
       if (b == 0) begin : sgrp
@@ -912,14 +920,15 @@ generate begin : l1dcrotrWH
          );
       end
    end
-end
+
 endgenerate
 // #############################################################################################
 
 // #############################################################################################
 // Parity Check
 // #############################################################################################
-generate begin : parBdet
+generate
+
    genvar b;
    for (b = 0; b <= 15; b = b + 1) begin : parBdet
       assign dcarr_perr_byte_wa[b] = dcarr_buf_data_wa[b + 0]  ^ dcarr_buf_data_wa[b + 16] ^
@@ -970,7 +979,7 @@ generate begin : parBdet
                                        dcarr_buf_data_wh[b + 96] ^ dcarr_buf_data_wh[b + 112] ^
                                        dcarr_rd_parity_wh[b];
    end
-end
+
 endgenerate
 
 // Report a Parity error if the data is not being bypassed due to a store to the same address
@@ -994,7 +1003,8 @@ assign dcarr_data_perr_way = {dcarr_perr_det_wa, dcarr_perr_det_wb, dcarr_perr_d
 // #############################################################################################
 
 // Data Fixup
-generate begin : ldData
+generate
+
    genvar bb;
    for (bb = 0; bb <= 15; bb = bb + 1) begin : ldData
       assign ex4_ld_data_swzl_wa[bb * 8:(bb * 8) + 7] = {ex4_ld_data_rot_wa[bb + 0],
@@ -1069,7 +1079,7 @@ generate begin : ldData
                                                              ex4_ld_data_rot_wh[bb + 96],
                                                              ex4_ld_data_rot_wh[bb + 112]};
    end
-end
+
 endgenerate
 
 // Non-Sign Extension
@@ -1091,7 +1101,8 @@ assign ex4_ld_data_wg[113:128] = ex4_ld_data_swzl_wg[112:127];
 assign ex4_ld_data_wh[113:128] = ex4_ld_data_swzl_wh[112:127];
 
 // Sign Extension
-generate begin : algExt
+generate
+
    genvar b;
    for (b = 0; b <= 47; b = b + 1) begin : algExt
       assign ex4_ld_data_wa[65 + b] = ex4_ld_data_swzl_wa[64 + b] | ex4_ld_alg_bit_wa[b/8];
@@ -1103,7 +1114,7 @@ generate begin : algExt
       assign ex4_ld_data_wg[65 + b] = ex4_ld_data_swzl_wg[64 + b] | ex4_ld_alg_bit_wg[b/8];
       assign ex4_ld_data_wh[65 + b] = ex4_ld_data_swzl_wh[64 + b] | ex4_ld_alg_bit_wh[b/8];
    end
-end
+
 endgenerate
 // #############################################################################################
 

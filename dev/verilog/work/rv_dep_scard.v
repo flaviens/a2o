@@ -202,7 +202,7 @@ module rv_dep_scard(
    //------------------------------------------------------------------------------------------------------------
 
    generate
-      begin : xhdl1
+
          genvar                        i;
          for (i = 0; i <= num_entries_g - 1; i = i + 1)
            begin : g0
@@ -236,14 +236,14 @@ module rv_dep_scard(
 
               assign scorecard_d[i] = (score_ta_match[i] | score_tb_match[i] | score_set[i] | scorecard_q[i]) & (~score_reset[i]) & (~iu_xx_zap);
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //------------------------------------------------------------------------------------------------------------
    // Mux out the itag
    //------------------------------------------------------------------------------------------------------------
    generate
-      begin : xhdl2
+
          genvar                        i;
          for (i = 0; i <= num_entries_g - 1; i = i + 1)
            begin : g1
@@ -255,8 +255,8 @@ module rv_dep_scard(
               assign i1_s2_itag_v_gated[i] = (scorecard_q[i]) & (i1_s2_itag == id);
               assign i1_s3_itag_v_gated[i] = (scorecard_q[i]) & (i1_s3_itag == id);
            end
-      end
-   endgenerate
+      
+endgenerate
    assign i0_s1_itag_v = |(i0_s1_itag_v_gated);
    assign i0_s2_itag_v = |(i0_s2_itag_v_gated);
    assign i0_s3_itag_v = |(i0_s3_itag_v_gated);

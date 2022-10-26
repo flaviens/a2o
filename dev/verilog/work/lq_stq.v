@@ -1487,7 +1487,7 @@ module lq_stq(
 
    // This is used to convert the wide vector port inputs into an internal 2 dimesional array format
    generate
-      begin : ports
+
          genvar tid;
          for (tid = 0; tid <= `THREADS - 1; tid = tid + 1)
            begin : convert
@@ -1499,8 +1499,8 @@ module lq_stq(
              assign ctl_lsq_spr_dbcr2_dvc1be_int[tid] = ctl_lsq_spr_dbcr2_dvc1be[8*tid:8*(tid+1)-1];
              assign ctl_lsq_spr_dbcr2_dvc2be_int[tid] = ctl_lsq_spr_dbcr2_dvc2be[8*tid:8*(tid+1)-1];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // Allocate an entry in the Queue off IU dispatch, insert itag
    // Do itag lookup to determine, queue entry, when data/address are available
@@ -1570,26 +1570,26 @@ module lq_stq(
    // I0 starts at the beginning of the TAG queue and works its way to the end, it looks for the first available
    assign stq_wrt_i0_ptr[0] = stq_tag_available[0];
    generate
-      begin : xhdl0
+
          genvar                                                      stq;
          for (stq = 1; stq <= `STQ_ENTRIES - 1; stq = stq + 1)
            begin : stqI0Wrt
               assign stq_wrt_i0_ptr[stq] = &(~stq_tag_available[0:stq - 1]) & stq_tag_available[stq];
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // I1 starts at the end of the TAG queue and works its way to the beginning, it looks for the first available entry
    assign stq_wrt_i1_ptr[`STQ_ENTRIES - 1] = stq_tag_available[`STQ_ENTRIES - 1];
    generate
-      begin : xhdl1
+
          genvar                                                      stq;
          for (stq = 0; stq <= `STQ_ENTRIES - 2; stq = stq + 1)
            begin : stqI1Wrt
               assign stq_wrt_i1_ptr[stq] = &(~stq_tag_available[stq + 1:`STQ_ENTRIES - 1]) & stq_tag_available[stq];
            end
-      end
-   endgenerate
+      
+endgenerate
 
     // Generate STQ TAG Entry Encoded
     always @(*)
@@ -1613,7 +1613,7 @@ module lq_stq(
     end
 
     generate
-       begin : xhdl2
+
           genvar                                                      stq;
           for (stq = 0; stq <= `STQ_ENTRIES - 1; stq = stq + 1)
           begin : stqTagAlloc
@@ -1655,8 +1655,8 @@ module lq_stq(
                                                                              stq_tag_ptr_q[stq];
              assign stq3_cmmt_tag_entry[stq] = |(stq_tag_ptr_q[stq] & stq3_cmmt_ptr_q) & stq_tag_val_q[stq];
           end
-       end
-   endgenerate
+       
+endgenerate
 
    // Order Queue Update with STQ TAG
    assign stq_odq_i0_stTag = stq_tag_i0_entry;
@@ -1758,14 +1758,14 @@ module lq_stq(
    assign cpl_ready = (~(|(cp_flush_q & cpl_ready_tid_final))) & (~(|(any_ack_val))) & |(stqe_need_ready & stqe_need_ready_ptr_q[0:`STQ_ENTRIES - 1] & (stqe_dreq_val_q[0:`STQ_ENTRIES - 1] | stqe_dvc_int_det | ((~stqe_need_ext_ack_q[0:`STQ_ENTRIES - 1]))));
 
    generate
-      begin : xhdl3
+
          genvar                                                      i;
          for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
          begin : skip_ready_gen
             assign stqe_skip_ready[i] = (~(|(cp_flush_q & stqe_thrd_id_q[i]))) & (stqe_need_ready_rpt[i] & stqe_need_ready_ptr_q[i] & stqe_need_ext_ack_q[i]);
          end
-      end
-   endgenerate
+      
+endgenerate
    assign skip_ready = |(stqe_skip_ready);
 
    assign dacrw_det[0] = |(stqe_dacrw_det0 & stqe_need_ready_ptr_q[0:`STQ_ENTRIES - 1]);
@@ -1803,7 +1803,7 @@ module lq_stq(
    assign hwsync_ack = an_ac_sync_ack;		//  and or_reduce(stqe_is_sync_q(0 to `STQ_ENTRIES-1) and     stqe_l_zero and                     stqe_need_ready_ptr_q(0 to `STQ_ENTRIES-1));
 
    generate
-      begin : xhdl4
+
          genvar                                                      t;
          for (t = 0; t <= `THREADS - 1; t = t + 1)
            begin : sync_thrd_gen
@@ -1813,8 +1813,8 @@ module lq_stq(
 
               assign l2_icbi_ack_d[t] = (((an_ac_icbi_ack_thread == t) & an_ac_icbi_ack) | l2_icbi_ack_q[t]) & (~icbi_ack[t]);
            end
-      end
-   endgenerate
+      
+endgenerate
 
    assign icswxr_ack = an_ac_back_inv & an_ac_back_inv_target_bit3;
    assign icswxr_ack_val = icswxr_ack_thrd & {`THREADS{icswxr_ack_q}};
@@ -1841,13 +1841,11 @@ module lq_stq(
 
    assign sync_ack[0] = sync_ack_all[0];
    generate		// this logic only works for 1 or 2 `THREADS
-      begin : xhdl5
-         genvar                                                      t;
-         for (t = 1; t <= `THREADS - 1; t = t + 1)
-           begin : sync_ack_thrd_gen
-              assign sync_ack[t] = (sync_ack_all[t] & (~sync_ack_all[t - 1])) | sync_ack_save_q;
-           end
-      end
+      genvar                                                      t;
+      for (t = 1; t <= `THREADS - 1; t = t + 1)
+         begin : sync_ack_thrd_gen
+            assign sync_ack[t] = (sync_ack_all[t] & (~sync_ack_all[t - 1])) | sync_ack_save_q;
+         end
    endgenerate
 
    assign lsq_ctl_sync_done = |(hwsync_ack_q | lwsync_ack_q);
@@ -1860,12 +1858,10 @@ module lq_stq(
 
    assign cr_ack[0] = cr_ack_q[0] & (~cr_block[0]) & (~(|(sync_ack_all)));
    generate		// this logic only works for 1 or 2 `THREADS
-      begin : xhdl6
-         genvar                                                      t;
-         for (t = 1; t <= `THREADS - 1; t = t + 1)
-         begin : cr_ack_thrd_gen
-            assign cr_ack[t] = cr_ack_q[t] & (~(cr_ack_q[t - 1] & (~cr_block[t - 1]))) & (~cr_block[t]) & (~(|(sync_ack_all)));
-         end
+      genvar                                                      t;
+      for (t = 1; t <= `THREADS - 1; t = t + 1)
+      begin : cr_ack_thrd_gen
+         assign cr_ack[t] = cr_ack_q[t] & (~(cr_ack_q[t - 1] & (~cr_block[t - 1]))) & (~cr_block[t]) & (~(|(sync_ack_all)));
       end
    endgenerate
 
@@ -1889,12 +1885,10 @@ module lq_stq(
    assign any_ack_val[0] = any_ack_hold_q[0] & (~ctl_lsq_stq_cpl_blk);
 
    generate		// this logic only works for 1 or 2 `THREADS
-      begin : xhdl7
-         genvar                                                      t;
-         for (t = 1; t <= `THREADS - 1; t = t + 1)
-         begin : any_ack_val_thrd_gen
-            assign any_ack_val[t] = any_ack_hold_q[t] & (~any_ack_hold_q[t - 1]) & (~ctl_lsq_stq_cpl_blk);
-         end
+      genvar                                                      t;
+      for (t = 1; t <= `THREADS - 1; t = t + 1)
+      begin : any_ack_val_thrd_gen
+         assign any_ack_val[t] = any_ack_hold_q[t] & (~any_ack_hold_q[t - 1]) & (~ctl_lsq_stq_cpl_blk);
       end
    endgenerate
 
@@ -2018,7 +2012,7 @@ module lq_stq(
    assign stqe0_icswxdot_val = stqe_is_icswxr_q[0] & (stqe_ttype_q[0] == 6'b100111);
 
    generate
-      begin : xhdl8
+
          genvar                                                      t;
          for (t = 0; t <= `THREADS - 1; t = t + 1)
          begin : ext_ack_queue_gen
@@ -2046,8 +2040,8 @@ module lq_stq(
             assign ext_ack_queue_dacrw_rpt_d[t] = ((stq7_cmmt_val_q & stqe_need_ext_ack_q[0] & stqe_thrd_id_q[0][t]) == 1'b1) ? stqe_dvc_int_det[0] :
                                                                                                                                 ext_ack_queue_dacrw_rpt_q[t];
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
    always @(*)
@@ -2368,7 +2362,7 @@ module lq_stq(
      end
 
    generate
-      begin : xhdl9
+
          genvar                                                      i;
          for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
            begin : stq_addr_entry_gen
@@ -2619,8 +2613,8 @@ module lq_stq(
                                                                     (((any_ack_val_ok_q == stqe_thrd_id_q[i + 1]) & stqe_need_ext_ack_q[i + 1] & stqe_have_cp_next_q[i + 1] &
                                                                         (~stqe_is_icbi_q[i + 1])) | stqe_ack_rcvd_q[i + 1]);
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // drop prefetches when a sync in valid in the stq
    assign lsq_ctl_sync_in_stq = |(stqe_valid_sync) | |(ext_ack_queue_sync_q);
@@ -2645,14 +2639,14 @@ module lq_stq(
    //  1       1        Stores are older from Oldest_Itag as upper bound, including Oldest_Itag
    // Need to validate the oldest entries
    generate
-      begin : xhdl10
+
          genvar                                                      stq;
          for (stq = 0; stq <= `STQ_ENTRIES - 1; stq = stq + 1)
            begin : ageExpand
               assign ex3_agecmp[stq] = |(ex3_nxt_oldest_q[stq:`STQ_ENTRIES - 1]) | ex3_pfetch_val;
            end
-      end
-   endgenerate
+      
+endgenerate
 
    // Muxing TAG Pointer
 
@@ -2701,7 +2695,8 @@ module lq_stq(
    assign ex4_req_opsize_1hot[4] = ex4_req_opsize_q == 3'b001;		// 1B
    assign ex4_req_opsize1        = ~ex4_req_opsize_q[0] & ex4_req_opsize_q[2];
 
-   generate begin : xhdl12
+   generate
+
      genvar                                                      i;
      genvar                                                      b;
 
@@ -2882,8 +2877,8 @@ module lq_stq(
 		   assign set_hold_early_clear[i] = ex4_fwd_sel[i] & (~stqe_data_val_q[i]) & ex4_ldreq_valid;
 		end
 	   end
-      end
-   endgenerate
+      
+endgenerate
 
    // Entry Address compared down to the 16 Byte boundary
    assign ex4_fwd_sel = ex4_fwd_addrcmp & ex4_fwd_agecmp_q & stqe_fwd_addr_val_q[0:`STQ_ENTRIES - 1] & (~ex4_byte_en_miss);
@@ -2898,7 +2893,8 @@ module lq_stq(
    assign ex3_ex4_byte_en_hit = |(ctl_lsq_ex3_byte_en & ex4_req_byte_en_q);
 
    // compare the forwardable entries to each other to determine the forwarding priority mask
-   generate begin : fwd_pri_gen_l1
+   generate
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_FWD_ENTRIES - 1; i = i + 1) begin : fwd_pri_gen_l1
        always @(*) begin: fwd_pri_gen_l2
@@ -2936,7 +2932,8 @@ module lq_stq(
          fwd_pri_mask[i]        = stq_mask[i];
        end
      end
-   end endgenerate
+   
+endgenerate
 
    assign stq_fwd_pri_mask_d = (stq_push_down == 1'b0) ? fwd_pri_mask[0:`STQ_FWD_ENTRIES - 2] :
                                                          fwd_pri_mask[1:`STQ_FWD_ENTRIES - 1];
@@ -3136,7 +3133,7 @@ module lq_stq(
      assign ex4_axu_val_d = ex3_axu_val_q & (~cp_flush_q);
 
    generate
-      begin : xhdl14
+
          genvar                                                      i;
          for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
            begin : stq_data_entry_gen
@@ -3271,8 +3268,8 @@ module lq_stq(
 				       ((stq_push_down == 1'b1 & stqe_data_val[i + 1] == 1'b1)) ? stqe_data1_mux[i + 1] :
 				                                                                  stqe_data1_q[i + 1];
 	   end
-      end
-   endgenerate
+      
+endgenerate
 
    //------------------------------------------------------------------------------
    // interface staging / Flushing
@@ -4115,7 +4112,7 @@ tri_rlmreg_p #(.WIDTH(`STQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1)) stqe_ack_rcvd_l
    .dout(stqe_ack_rcvd_q[0:`STQ_ENTRIES - 1])
 );
 generate
-   begin : xhdl15
+
       genvar                                                      i;
       for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
       begin : stqe_lmqhit_latch_gen
@@ -4139,10 +4136,10 @@ generate
             .dout(stqe_lmqhit_q[i])
          );
       end
-   end
+   
 endgenerate
 generate
-   begin : xhdl16
+
       genvar                                                      i;
       for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
       begin : stqe_need_ext_ack_latch_gen
@@ -4166,11 +4163,11 @@ generate
             .dout(stqe_need_ext_ack_q[i])
          );
       end
-   end
-   endgenerate
+   
+endgenerate
 
 generate
-   begin : stqe_blk_loads_latch_gen
+
       genvar                                                      i;
       for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1) begin : stqe_blk_loads_latch_gen
 
@@ -4193,11 +4190,11 @@ generate
             .dout(stqe_blk_loads_q[i])
          );
       end
-   end
-   endgenerate
+   
+endgenerate
 
 generate
-   begin : xhdl57
+
       genvar                                                      i;
       for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
       begin : stqe_all_thrd_chk_latch_gen
@@ -4221,11 +4218,11 @@ generate
             .dout(stqe_all_thrd_chk_q[i])
          );
       end
-   end
-   endgenerate
+   
+endgenerate
 
    generate
-   begin : xhdl17
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_itag_latch_gen
@@ -4250,10 +4247,10 @@ generate
                        .dout(stqe_itag_q[i])
                        );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl18
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_addr_latch_gen
@@ -4277,10 +4274,10 @@ generate
                        .dout(stqe_addr_q[i])
                        );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl19
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_rotcmp_latch_gen
@@ -4304,10 +4301,10 @@ generate
                          .dout(stqe_rotcmp_q[i])
                          );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl20
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_cline_chk_latch_gen
@@ -4331,10 +4328,10 @@ generate
                             .dout(stqe_cline_chk_q[i])
                             );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl21
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_ttype_latch_gen
@@ -4358,10 +4355,10 @@ generate
                         .dout(stqe_ttype_q[i])
                         );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl22
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_byte_en_latch_gen
@@ -4385,10 +4382,10 @@ generate
                           .dout(stqe_byte_en_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl23
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_wimge_latch_gen
@@ -4412,10 +4409,10 @@ generate
                         .dout(stqe_wimge_q[i])
                         );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl24
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_byte_swap_latch_gen
@@ -4439,10 +4436,10 @@ generate
                             .dout(stqe_byte_swap_q[i])
                             );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl25
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_opsize_latch_gen
@@ -4466,10 +4463,10 @@ generate
                          .dout(stqe_opsize_q[i])
                          );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl26
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_axu_val_latch_gen
@@ -4493,10 +4490,10 @@ generate
                           .dout(stqe_axu_val_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl27
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_epid_val_latch_gen
@@ -4520,10 +4517,10 @@ generate
                            .dout(stqe_epid_val_q[i])
                            );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl28
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_usr_def_latch_gen
@@ -4547,10 +4544,10 @@ generate
                           .dout(stqe_usr_def_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl29
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_is_store_latch_gen
@@ -4574,10 +4571,10 @@ generate
                            .dout(stqe_is_store_q[i])
                            );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl30
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_is_sync_latch_gen
@@ -4601,10 +4598,10 @@ generate
                           .dout(stqe_is_sync_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl31
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_is_resv_latch_gen
@@ -4628,10 +4625,10 @@ generate
                           .dout(stqe_is_resv_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl32
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_is_icswxr_latch_gen
@@ -4655,10 +4652,10 @@ generate
                             .dout(stqe_is_icswxr_q[i])
                             );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl33
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_is_icbi_latch_gen
@@ -4682,10 +4679,10 @@ generate
                           .dout(stqe_is_icbi_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl34
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_is_inval_op_latch_gen
@@ -4709,10 +4706,10 @@ generate
                               .dout(stqe_is_inval_op_q[i])
                               );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl35
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_dreq_val_latch_gen
@@ -4736,10 +4733,10 @@ generate
                            .dout(stqe_dreq_val_q[i])
                            );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl36
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_has_data_latch_gen
@@ -4763,10 +4760,10 @@ generate
                            .dout(stqe_has_data_q[i])
                            );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl37
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_send_l2_latch_gen
@@ -4790,10 +4787,10 @@ generate
                           .dout(stqe_send_l2_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl38
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_lock_clr_latch_gen
@@ -4817,10 +4814,10 @@ generate
                            .dout(stqe_lock_clr_q[i])
                            );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl39
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_watch_clr_latch_gen
@@ -4844,10 +4841,10 @@ generate
                             .dout(stqe_watch_clr_q[i])
                             );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl40
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_l_fld_latch_gen
@@ -4871,10 +4868,10 @@ generate
                         .dout(stqe_l_fld_q[i])
                         );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl41
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_thrd_id_latch_gen
@@ -4898,10 +4895,10 @@ generate
                           .dout(stqe_thrd_id_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl42
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_tgpr_latch_gen
@@ -4925,10 +4922,10 @@ generate
                        .dout(stqe_tgpr_q[i])
                        );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl43
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_dvc_en_latch_gen
@@ -4952,10 +4949,10 @@ generate
                          .dout(stqe_dvc_en_q[i])
                          );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl44
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_dacrw_latch_gen
@@ -4979,10 +4976,10 @@ generate
                         .dout(stqe_dacrw_q[i])
                         );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl45
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES - 1; i = i + 1)
      begin : stqe_dvcr_cmpr_latch_gen
@@ -5006,10 +5003,10 @@ generate
                             .dout(stqe_dvcr_cmpr_q[i])
                             );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl47
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_qHit_held_latch_gen
@@ -5033,10 +5030,10 @@ generate
                             .dout(stqe_qHit_held_q[i])
                             );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl48
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_held_early_clr_latch_gen
@@ -5060,10 +5057,10 @@ generate
                                  .dout(stqe_held_early_clr_q[i])
                                  );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl49
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stqe_data1_latch_gen
@@ -5087,8 +5084,8 @@ generate
                         .dout(stqe_data1_q[i])
                         );
      end
-   end
-   endgenerate
+   
+endgenerate
 
      tri_rlmreg_p #(.WIDTH(`STQ_ENTRIES), .INIT(0), .NEEDS_SRESET(1))   ex4_fxu1_data_ptr_latch(
                                  .clk(clk),
@@ -5186,7 +5183,7 @@ generate
                            );
 
    generate
-   begin : xhdl50
+
      genvar                                                      i;
      for (i = 0; i <= `THREADS-1; i = i + 1)
      begin : cp_next_itag_latch_gen
@@ -5209,8 +5206,8 @@ generate
                           .dout(cp_next_itag_q[i])
                           );
      end
-   end
-   endgenerate
+   
+endgenerate
 
      tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1))     cp_i0_completed_latch(
                            .clk(clk),
@@ -5231,7 +5228,7 @@ generate
                            .dout(cp_i0_completed_q)
                            );
    generate
-   begin : xhdl51
+
      genvar                                                      i;
      for (i = 0; i <= `THREADS-1; i = i + 1)
      begin : cp_i0_completed_itag_latch_gen
@@ -5254,8 +5251,8 @@ generate
                                   .dout(cp_i0_completed_itag_q[i])
                                   );
      end
-   end
-   endgenerate
+   
+endgenerate
 
      tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1))     cp_i1_completed_latch(
                            .clk(clk),
@@ -5276,7 +5273,7 @@ generate
                            .dout(cp_i1_completed_q)
                            );
    generate
-   begin : xhdl52
+
      genvar                                                      i;
      for (i = 0; i <= `THREADS-1; i = i + 1)
      begin : cp_i1_completed_itag_latch_gen
@@ -5300,8 +5297,8 @@ generate
                                   .dout(cp_i1_completed_itag_q[i])
                                   );
      end
-   end
-   endgenerate
+   
+endgenerate
 
      tri_rlmlatch_p #(.INIT(0), .NEEDS_SRESET(1))     stq_cpl_need_hold_reg(
                            .vd(vdd),
@@ -6177,7 +6174,7 @@ generate
 
 
    generate
-   begin : xhdl53
+
      genvar                                                      i;
      for (i = 0; i <= `THREADS-1; i = i + 1)
      begin : ext_ack_queue_itag_latch_gen
@@ -6201,10 +6198,10 @@ generate
                                 .dout(ext_ack_queue_itag_q[i])
                                 );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl54
+
      genvar                                                      i;
      for (i = 0; i <= `THREADS-1; i = i + 1)
      begin : ext_ack_queue_cr_wa_latch_gen
@@ -6228,10 +6225,10 @@ generate
                                  .dout(ext_ack_queue_cr_wa_q[i])
                                  );
      end
-   end
-   endgenerate
+   
+endgenerate
    generate
-   begin : xhdl55
+
      genvar                                                      i;
      for (i = 0; i <= `THREADS-1; i = i + 1)
      begin : ext_ack_queue_dacrw_det_latch_gen
@@ -6255,8 +6252,8 @@ generate
                                      .dout(ext_ack_queue_dacrw_det_q[i])
                                      );
      end
-   end
-   endgenerate
+   
+endgenerate
 
      tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1))     ext_ack_queue_dacrw_rpt_latch(
                                    .clk(clk),
@@ -7701,7 +7698,7 @@ generate
                            .dout(stq_tag_val_q)
                            );
    generate
-   begin : xhdl56
+
      genvar                                                      i;
      for (i = 0; i <= `STQ_ENTRIES-1; i = i + 1)
      begin : stq_tag_ptr_latch_gen
@@ -7725,8 +7722,8 @@ generate
                          .dout(stq_tag_ptr_q[i])
                          );
      end
-   end
-   endgenerate
+   
+endgenerate
 
      tri_rlmreg_p #(.WIDTH(`STQ_ENTRIES_ENC), .INIT(0), .NEEDS_SRESET(1))     stq4_cmmt_tag_latch(
                          .clk(clk),

@@ -2872,14 +2872,15 @@ assign spr_epcr_duvd_d = xu_lq_spr_epcr_duvd;
 assign spr_lpidr_d = mm_lq_lsu_lpidr;
 
 // Threaded Registers
-generate begin : tidPid
+generate
+
       genvar tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : tidPid
 	     assign spr_pid_d[tid]    = mm_lq_pid[14*tid:(14*tid)+13];
          assign spr_acop_ct[tid]  = spr_dcc_spr_acop_ct[32*tid:(32*tid)+31];
          assign spr_hacop_ct[tid] = spr_dcc_spr_hacop_ct[32*tid:(32*tid)+31];
       end
-   end
+   
 endgenerate
 
 // Determine threads in hypervisor state
@@ -3436,7 +3437,8 @@ assign ex3_icswx_ct[1] = (lsq_ctl_ex3_le_ct == 6'b100000) ? ex3_cop_ct[32] :
                          (lsq_ctl_ex3_le_ct == 6'b111111) ? ex3_cop_ct[63] :
                          1'b0;
 
-generate begin : regConc
+generate
+
       genvar tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : regConc
         // Concatenate Appropriate EPSC fields
@@ -3445,7 +3447,7 @@ generate begin : regConc
         // Concatenate Appropriate LESR fields
         assign lesr_t_reg[tid] = spr_dcc_spr_lesr[tid*24:(tid*24)+23];
       end
-   end
+   
 endgenerate
 
 // Thread Register Selection
@@ -3493,7 +3495,8 @@ assign stq3_icswx_data_d = stq2_epid_val_q ? stq2_icswx_epid : stq2_icswx_nepid;
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 // CR Setter
-generate begin : crData
+generate
+
       genvar cr;
       for (cr=0; cr<`CR_WIDTH; cr=cr+1) begin : crData
          if (cr == 2) begin : crSet0
@@ -3506,7 +3509,7 @@ generate begin : crData
             assign ex5_cr_wd[cr] = 1'b0;
          end
       end
-   end
+   
 endgenerate
 
 //ldawx.        --> 00 || b2 || XER[SO]
@@ -3547,12 +3550,13 @@ assign be3210_en = (ex3_eff_addr_q[62:63] == 2'b00) ? beC840_en[0:15] :
                    {3'b000, beC840_en[0:12]};
 
 // Byte Enables Generated using the opsize and physical_addr(60 to 63)
-generate begin : ben_gen
+generate
+
       genvar t;
       for (t=0; t<16; t=t+1) begin : ben_gen
          assign byte_en[t] = ex3_opsize[0] | be3210_en[t];
       end
-   end
+   
 endgenerate
 
 // Gate off Byte Enables for instructions that have no address checking in the Order Queue
@@ -3936,12 +3940,13 @@ assign ex3_stq_val_req_d = ex2_stq_val_req   & ~fgen_ex2_stg_flush_int;
 assign ex4_stq_val_req_d = ex3_stq_val_req_q & ~fgen_ex3_stg_flush_int;
 
 // Wait for Next Completion Indicator Instructions
-generate begin : cpNextItag
+generate
+
       genvar tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : cpNextItag
          assign ex3_wNComp_tid[tid] = ex3_thrd_id_q[tid] & iu_lq_recirc_val_q[tid] & (ex3_itag_q == iu_lq_cp_next_itag_q[tid]);
       end
-   end
+   
 endgenerate
 
 assign ex3_wNComp_rcvd   = |(ex3_wNComp_tid);
@@ -4113,7 +4118,8 @@ assign dcc_spr_spr_xudbg0_done = dir_arr_rd_ex5_done_q;
 assign xudbg1_dir_reg_d    = {dir_arr_rd_directory, dir_arr_rd_lru};
 assign xudbg1_parity_reg_d = dir_arr_rd_parity;
 
-generate begin : xudbg1Watch
+generate
+
       genvar tid;
       for (tid=0; tid<4; tid=tid+1) begin : xudbg1Watch
          if (tid < `THREADS) begin : tidVal
@@ -4123,7 +4129,7 @@ generate begin : xudbg1Watch
             assign dcc_spr_spr_xudbg1_watch[tid] = 1'b0;
          end
       end
-   end
+   
 endgenerate
 
 generate
@@ -4677,7 +4683,8 @@ tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) iu_lq_recirc_val_re
    .dout(iu_lq_recirc_val_q)
 );
 
-generate begin : iu_lq_cp_next_itag_tid
+generate
+
       genvar tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : iu_lq_cp_next_itag_tid
          tri_rlmreg_p #(.WIDTH(`ITAG_SIZE_ENC), .INIT(0), .NEEDS_SRESET(1)) iu_lq_cp_next_itag_reg(
@@ -4699,7 +4706,7 @@ generate begin : iu_lq_cp_next_itag_tid
             .dout(iu_lq_cp_next_itag_q[tid])
          );
       end
-   end
+   
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(`THREADS), .INIT(0), .NEEDS_SRESET(1)) iu_lq_cp_flush_reg(
@@ -10136,7 +10143,8 @@ tri_rlmreg_p #(.WIDTH(8), .INIT(0), .NEEDS_SRESET(1)) spr_lpidr_reg(
    .dout(spr_lpidr_q)
 );
 
-generate begin : spr_pid_reg
+generate
+
       genvar tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : spr_pid_reg
          tri_ser_rlmreg_p #(.WIDTH(14), .INIT(0), .NEEDS_SRESET(1)) spr_pid_reg(
@@ -10158,7 +10166,7 @@ generate begin : spr_pid_reg
             .dout(spr_pid_q[tid])
          );
       end
-   end
+   
 endgenerate
 
 tri_rlmlatch_p #(.INIT(0), .NEEDS_SRESET(1)) ex3_icswx_gs_reg(

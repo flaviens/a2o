@@ -151,7 +151,7 @@ module rv_barf(
    //-------------------------------------------------------------------------------------------------------
 
    generate
-      begin : xhdl1
+
          genvar                      n;
          for (n = 0; n <= (q_num_entries_g - 1); n = n + 1)
            begin : q_dat_gen
@@ -166,15 +166,15 @@ module rv_barf(
 	      assign q_dat_act[n] = w_act[n];
 
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //-------------------------------------------------------------------------------------------------------
    // Read Mux
    //-------------------------------------------------------------------------------------------------------
 
    generate
-      begin : xhdl1r
+
          genvar                      n, b;
          for (n = 0; n <= (q_num_entries_g - 1); n = n + 1)
            begin : rgene
@@ -189,11 +189,11 @@ module rv_barf(
 		end
 
            end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl1o
+
          genvar                      b;
          for (b = 0; b <= (q_dat_width_g - 1); b = b + 1)
            begin : rgeneo
@@ -201,15 +201,15 @@ module rv_barf(
 	      assign r0_dat[b] = |(q_read_dat[b]);
 
            end
-      end
-   endgenerate
+      
+endgenerate
 
 
    //-------------------------------------------------------------------------------------------------------
    // storage elements
    //-------------------------------------------------------------------------------------------------------
    generate
-      begin : xhdl2
+
          genvar                      n;
          for (n = 0; n <= q_num_entries_g - 1; n = n + 1)
            begin : q_x_q_gen
@@ -257,8 +257,8 @@ module rv_barf(
 			  .dout(q_dat_q[n])
 			  );
            end
-      end
-   endgenerate
+      
+endgenerate
 
    //---------------------------------------------------------------------
    // Scan

@@ -905,7 +905,7 @@ module xu_spr
    );
 
    generate
-      begin : threads
+
          genvar                              t;
          for (t = 0; t <= `THREADS - 1; t = t + 1)
          begin : thread
@@ -1101,8 +1101,8 @@ module xu_spr
                .gnd(gnd)
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
    tri_64x72_1r1w xu_spr_aspr(
@@ -1266,7 +1266,7 @@ module xu_spr
       .dout(reset_wd_request_q)
    );
    generate
-      begin : int_rest_ifar_latch_gen
+
          genvar                              r;
          for (r = 0; r <= `THREADS-1; r = r + 1)
          begin : thread
@@ -1290,8 +1290,8 @@ module xu_spr
                .dout(int_rest_ifar_q[r])
             );
          end
-      end
-      endgenerate
+      
+endgenerate
 
    tri_rlmlatch_p #(.INIT(0), .NEEDS_SRESET(1)) trace_bus_enable_latch(
       .clk(clk),
@@ -1754,7 +1754,7 @@ module xu_spr
 	.rst(rst),.flush(pc_xu_ccflush_dc));
 
       generate
-         begin : perv_1to0_reg_gen
+
             genvar                              t;
             for (t = 0; t <= `THREADS; t = t + 1)
             begin : thread
@@ -1812,8 +1812,8 @@ module xu_spr
                   .thold_b(func_nsl_thold_0_b[t])
                );
             end
-         end
-      endgenerate
+         
+endgenerate
 
    assign ccfg_sl_force = cfg_sl_force;
    assign ccfg_sl_thold_0_b = cfg_sl_thold_0_b;

@@ -2201,7 +2201,7 @@ module iuq_cpl_ctrl(
    // Update Fields on Dispatch
    //-----------------------------------------------------------------------------
    generate
-  	   begin : xhdl0
+
   	      genvar e;
          for (e = 0; e < `CPL_Q_DEPTH ; e = e + 1)
          begin : dispatch_update_gen
@@ -2229,8 +2229,8 @@ module iuq_cpl_ctrl(
                                     ({cp1_i0_dispatched[e], cp1_i1_dispatched[e]} == 2'b01) ? iu6_i1_bp_pred_q :
                                      cp1_bp_pred_q[e];
          end
-      end
-   endgenerate
+      
+endgenerate
 
    // Debug is special because it is updates on dispatch and completion
    // 0    - Unconditional         implemented
@@ -2249,7 +2249,7 @@ module iuq_cpl_ctrl(
    assign iu6_i1_db_IAC_IVC_event = iac1_dbg_event[1] | iac2_dbg_event[1] | iac3_dbg_event[1] | iac4_dbg_event[1] | ivc_dbg_event[1];
 
    generate
-      begin : xhdl1
+
          genvar e;
          for (e = 0; e < `CPL_Q_DEPTH; e = e + 1)
          begin : db_event_cp_gen
@@ -2359,8 +2359,8 @@ module iuq_cpl_ctrl(
                                           cp1_i1_dispatched[e]	? ivc_dbg_event[1] :
                                           cp1_db_events_q[e][18];
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign rn_cp_iu6_i0_act = rn_cp_iu6_i0_vld;
    assign rn_cp_iu6_i1_act = rn_cp_iu6_i0_vld;
@@ -2371,7 +2371,7 @@ module iuq_cpl_ctrl(
    // Update Fields on Execution
    //-----------------------------------------------------------------------------
    generate
-      begin : xhdl2
+
          genvar e;
          for (e = 0; e < `CPL_Q_DEPTH; e = e + 1)
          begin : cp1_executed_update_gen
@@ -2484,8 +2484,8 @@ module iuq_cpl_ctrl(
                                     xu_execute_vld[e] 	? xu_mtiar_q :
                                     cp1_br_miss_q[e];
          end
-      end
-   endgenerate
+      
+endgenerate
 
 
    //-----------------------------------------------------------------------------
@@ -2835,18 +2835,18 @@ assign select_lq =
    assign iu6_ifar[1] = {cp3_nia_q[62 - `EFF_IFAR_ARCH:61 - `EFF_IFAR_WIDTH], iu6_i1_ifar_q};
 
    generate
-      begin : xhdl3
+
          genvar e;
          for (e = 0; e < `EFF_IFAR_ARCH; e = e + 1)
          begin : iac_mask_gen
          	assign iac2_mask[e] = spr_iac2_q[e] | (~(dbcr1_iac12m_q));
             assign iac4_mask[e] = spr_iac4_q[e] | (~(dbcr1_iac34m_q));
          end
-      end
-   endgenerate
+      
+endgenerate
 
    generate
-      begin : xhdl4
+
          genvar t;
          for (t = 0; t <= 1; t = t + 1)
          begin : ifar_cmp
@@ -2885,8 +2885,8 @@ assign select_lq =
             assign iac4_cmpr_sel[t] = (dbcr1_iac34m_q == 1'b0) ? (iac4_cmpr[t] & iac4_en_q) :
                                       (iac3_cmpr[t] & iac4_en_q);
          end
-      end
-   endgenerate
+      
+endgenerate
 
    assign ivc_cmpr_sel[0] = iu6_i0_match_q & dbcr3_ivc_q;
    assign ivc_cmpr_sel[1] = iu6_i1_match_q & dbcr3_ivc_q;
@@ -4358,7 +4358,7 @@ assign select_lq =
    );
 
    generate
-      begin : xhdl5
+
          genvar i;
          for (i = 0; i <= `CPL_Q_DEPTH - 1; i = i + 1)
          begin : q_depth_gen
@@ -4685,8 +4685,8 @@ assign select_lq =
                .dout(cp1_br_miss_q[i])
             );
          end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmreg_p #(.WIDTH(`EFF_IFAR_ARCH), .INIT(0), .NEEDS_SRESET(1)) cp1_br_bta_latch(
       .clk(clk),
@@ -7818,7 +7818,7 @@ assign select_lq =
 `endif
 
    generate
-      begin : xhdl6
+
          genvar i;
          for (i = 0; i < `EFF_IFAR_ARCH; i = i + 1)
          begin : q_depth_gen
@@ -7861,8 +7861,8 @@ assign select_lq =
                   .dout(cp3_nia_q[(62-`EFF_IFAR_ARCH+i)])
                );
          end
-      end
-   endgenerate
+      
+endgenerate
 
    tri_rlmlatch_p #(.INIT(0), .NEEDS_SRESET(1)) cp4_rfi_latch(
       .clk(clk),

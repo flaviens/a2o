@@ -1324,13 +1324,14 @@ assign ex5_way_hit_d = ex4_way_hit;
 // Execution Pipe Directory Read
 // ####################################################
 // 1-hot Congruence Class Select
-generate begin : ldpCClass
+generate
+
       genvar                            cclass;
       for (cclass=0; cclass<numCClass; cclass=cclass+1) begin : ldpCClass
          wire [uprCClassBit:lwrCClassBit]       cclassDummy = cclass;
          assign ex3_congr_cl_1hot[cclass] = (cclassDummy == ex3_congr_cl_q);
       end
-   end
+   
 endgenerate
 
 // Execution Path Directory Valid Muxing
@@ -1404,7 +1405,8 @@ assign congr_cl_ex3_ex6_m  = congr_cl_ex3_ex6_cmp_q  & p0_wren_cpy_q;
 assign congr_cl_ex3_stq4_m = congr_cl_ex3_stq4_cmp_q & rel4_clr_stg_val_q;
 assign congr_cl_ex3_stq5_m = congr_cl_ex3_stq5_cmp_q & rel5_clr_stg_val_q;
 
-generate begin : ldpByp
+generate
+
       genvar                            ways;
       for (ways=0; ways<numWays; ways=ways+1) begin : ldpByp
          // Way Bypass Calculation                                                               Should have the following priority
@@ -1431,13 +1433,14 @@ generate begin : ldpByp
                                       (ex3_way_stg_pri[ways] & {dirState{~congr_cl_ex3_way_byp[ways][2]}});
          assign ex5_way_val_d[ways] = ex4_way_val_q[ways];
       end
-   end
+   
 endgenerate
 
 // ####################################################
 // Execution Pipe Update Directory Logic
 // ####################################################
-generate begin : ldpCtrl
+generate
+
       genvar                            ways;
       for (ways=0; ways<numWays; ways=ways+1) begin : ldpCtrl
          // Hit Detect
@@ -1459,11 +1462,9 @@ generate begin : ldpCtrl
 
          // Set/Clr Watch Bit for Thread on Port0
          // Cacheline Watch Bits
-         begin : P0Watch
-            genvar                            tid;
-            for (tid=0; tid<`THREADS; tid=tid+1) begin : P0Watch
-               assign ex4_dir_way[ways][2 + tid] = (ex4_way_val_q[ways][2 + tid] & ~ex4_clr_watch) | (ex4_way_val_q[ways][0] & ex4_set_watch[tid]);
-            end
+         genvar                            tid;
+         for (tid=0; tid<`THREADS; tid=tid+1) begin : P0Watch
+            assign ex4_dir_way[ways][2 + tid] = (ex4_way_val_q[ways][2 + tid] & ~ex4_clr_watch) | (ex4_way_val_q[ways][0] & ex4_set_watch[tid]);
          end
 
          // Determine if a Watch Bit was lost
@@ -1483,7 +1484,7 @@ generate begin : ldpCtrl
          // Determine `THREADS Watch Bits Per Way
          assign ex4_way_watch[ways] = |(ex4_thrd_id_q & ex4_way_val_q[ways][2:dirState - 1]);
       end
-   end
+   
 endgenerate
 
 // Execution Pipe Hit/Miss
@@ -1687,7 +1688,8 @@ assign ex5_multihit_watch_lost = ex5_cClass_thrd_watch_q & {`THREADS{(ex5_dir_mu
 
 // Parity Error Detect
 // ####################################################
-generate begin : ldpErrGen
+generate
+
       genvar                            ways;
       for (ways=0; ways<numWays; ways=ways+1) begin : ldpErrGen
          assign ex4_dir_perr_det[ways]      = ex4_way_val_q[ways][0] & ex4_tag_perr_way[ways];
@@ -1697,7 +1699,7 @@ generate begin : ldpErrGen
          assign ex4_err_lock_lost[ways]     = ex4_way_val_q[ways][1] & ex4_perr_way[ways];
          assign ex4_err_way_watchlost[ways] = ex4_way_val_q[ways][2:dirState - 1] & {dirState-2{ex4_perr_way[ways]}};
       end
-   end
+   
 endgenerate
 
 // Lock Bit Lost due to Parity Error
@@ -1833,13 +1835,14 @@ assign stq4_way_hit_d       = stq3_way_hit;
 // Reload Pipe Directory Read
 // ####################################################
 // 1-hot Congruence Class Select
-generate begin : stpCClass
+generate
+
       genvar                            cclass;
       for (cclass=0; cclass<numCClass; cclass=cclass+1) begin : stpCClass
          wire [uprCClassBit:lwrCClassBit]       cclassDummy = cclass;
          assign stq2_congr_cl_1hot[cclass] = (cclassDummy == stq2_congr_cl_q);
       end
-   end
+   
 endgenerate
 
 // Reload Path Directory Valid Bits Muxing
@@ -1911,7 +1914,8 @@ assign congr_cl_stq2_stq5_m = congr_cl_stq2_stq5_cmp_q & p1_wren_cpy_q;     // D
 assign congr_cl_stq2_ex5_m  = congr_cl_stq2_ex5_cmp_q & (ex5_binv_val_q | (ex5_lock_set_q & rel2_clr_stg_val_q));
 assign congr_cl_stq2_ex6_m  = congr_cl_stq2_ex6_cmp_q & p0_wren_q;
 
-generate begin : stpByp
+generate
+
       genvar                            ways;
       for (ways=0; ways<numWays; ways=ways+1) begin : stpByp
 
@@ -1939,13 +1943,14 @@ generate begin : stpByp
                                        (stq2_way_stg_pri[ways] & {dirState{~congr_cl_stq2_way_byp[ways][2]}});
          assign stq4_way_val_d[ways] = stq3_way_val_q[ways][2:dirState-1];
       end
-   end
+   
 endgenerate
 
 // ####################################################
 // Reload/Commit Directory Update
 // ####################################################
-generate begin : stpCtrl
+generate
+
       genvar                            ways;
       for (ways=0; ways<numWays; ways=ways+1) begin : stpCtrl
          // Hit Detect
@@ -1967,11 +1972,9 @@ generate begin : stpCtrl
 
          // Set/Clr Watch Bit for Thread on Port1
          // Cacheline Watch Bits
-         begin : P1Watch
-            genvar                            tid;
-            for (tid=0; tid<`THREADS; tid=tid+1) begin : P1Watch
-               assign stq3_dir_way[ways][2 + tid] = (stq3_way_val_q[ways][2 + tid] & (~(stq3_clr_watch[tid] | rel_way_clr[ways]))) | (rel3_set_watch[tid] & rel_way_set[ways]);
-            end
+         genvar                            tid;
+         for (tid=0; tid<`THREADS; tid=tid+1) begin : P1Watch
+            assign stq3_dir_way[ways][2 + tid] = (stq3_way_val_q[ways][2 + tid] & (~(stq3_clr_watch[tid] | rel_way_clr[ways]))) | (rel3_set_watch[tid] & rel_way_set[ways]);
          end
 
          // Determine if a Watch Bit was lost
@@ -2022,7 +2025,7 @@ generate begin : stpCtrl
          assign stq4_dir_way_rel[ways][0]              = (rel2_clr_stg_val_q & stq4_rel_way_clr_q[ways]) | (stq4_dir_way_q[ways][0] & (~stq4_rel_way_clr_q[ways]));
          assign stq4_dir_way_rel[ways][1:dirState - 1] = stq4_dir_way_q[ways][1:dirState - 1];
       end
-   end
+   
 endgenerate
 
 // Recirculation Pipe Hit/Miss
@@ -2095,12 +2098,13 @@ always @(*) begin: stpThrdWatch
 end
 
 // Want to still update the STM_WATCHLOST indicator if the DCDIS=1
-generate begin : wLVal
+generate
+
       genvar                            tid;
       for (tid = 0; tid <= `THREADS - 1; tid = tid + 1) begin : wLVal
          assign stq4_watchlost_value[tid] = ~stq4_watch_clr_all[tid] ? stq4_lost_watch[tid] : stq4_l_fld_b1_q;
       end
-   end
+   
 endgenerate
 
 // Update STM_WACHTLOST valid
@@ -2158,7 +2162,8 @@ assign stq4_multihit_watch_lost = stq4_cClass_thrd_watch_q & {`THREADS{stq4_dir_
 
 // Parity Error Detect
 // ####################################################
-generate begin : stpErrGen
+generate
+
       genvar                            ways;
       for (ways=0; ways<numWays; ways=ways+1) begin : stpErrGen
          assign stq3_err_det_way[ways]       = stq3_way_val_q[ways][0] & stq3_tag_way_perr[ways];
@@ -2166,7 +2171,7 @@ generate begin : stpErrGen
          assign stq3_err_lock_lost[ways]     = stq3_way_val_q[ways][1] & stq3_tag_way_perr[ways];
          assign stq3_err_way_watchlost[ways] = stq3_way_val_q[ways][2:dirState - 1] & {dirState-2{stq3_tag_way_perr[ways]}};
       end
-   end
+   
 endgenerate
 
 // Lock Bit Lost due to Parity Error
@@ -2187,7 +2192,8 @@ assign stq5_dir_err_val_d = stq4_dir_err_val;
 // Update Watch Lost State Bits per thread
 // ####################################################
 
-generate begin : wLost
+generate
+
       genvar                            tid;
       for (tid=0; tid<`THREADS; tid=tid+1) begin : wLost
          assign stm_upd_watchlost_tid[tid] = {stq4_watchlost_upd[tid], ex5_watchlost_upd[tid]};
@@ -2195,7 +2201,7 @@ generate begin : wLost
                                      (stm_upd_watchlost_tid[tid] == 2'b01) ? ex5_watchlost_set[tid] :
                                      stq4_watchlost_set[tid];
       end
-   end
+   
 endgenerate
 
 // Watch Lost Bits
@@ -2291,7 +2297,8 @@ assign stq7_wren_d   = stq6_wren_q;
 // Act Pin to all Directory Latches
 assign congr_cl_all_act_d = (stq4_watch_clr_all_q & stq4_val_q) | stq4_dci_val_q | spr_xucr0_clfc_q;
 
-generate begin : dirUpdCtrl
+generate
+
       genvar                            cclass;
       for (cclass=0; cclass<numCClass; cclass=cclass+1) begin : dirUpdCtrl
          wire [uprCClassBit:lwrCClassBit]       cclassDummy = cclass;
@@ -2305,12 +2312,10 @@ generate begin : dirUpdCtrl
          assign p1_congr_cl_act_d[cclass] = p1_congr_cl_m[cclass] & (stq4_rel4_val_q | rel4_set_dir_val_q | stq4_dir_err_val);
          assign congr_cl_act[cclass]      = p0_congr_cl_act_q[cclass] | p1_congr_cl_act_q[cclass] | congr_cl_all_act_q;
 
-         begin : wayCtrl
-            genvar                            ways;
-            for (ways=0; ways<numWays; ways=ways+1) begin : wayCtrl
-               assign p0_way_data_upd_way[cclass][ways] = p0_congr_cl_act_q[cclass] & ex6_way_upd_q[ways]  & p0_wren_q;
-               assign p1_way_data_upd_way[cclass][ways] = p1_congr_cl_act_q[cclass] & stq5_way_upd_q[ways] & p1_wren_q;
-            end
+         genvar                            ways;
+         for (ways=0; ways<numWays; ways=ways+1) begin : wayCtrl
+            assign p0_way_data_upd_way[cclass][ways] = p0_congr_cl_act_q[cclass] & ex6_way_upd_q[ways]  & p0_wren_q;
+            assign p1_way_data_upd_way[cclass][ways] = p1_congr_cl_act_q[cclass] & stq5_way_upd_q[ways] & p1_wren_q;
          end
 
          // ####################################################
@@ -2473,7 +2478,7 @@ generate begin : dirUpdCtrl
                                                         (rel_bixu_wayH_upd[cclass] == 2'b10) ? (ex6_dir_way_q[7][2:dirState - 1] & (~watch_finval_q)) :
                                                         (stq5_dir_way_q[7][2:dirState - 1] & (~watch_finval_q));
       end
-   end
+   
 endgenerate
 
 // ####################################################
@@ -2563,7 +2568,8 @@ assign lq_xu_spr_xucr0_cslc_binv = xucr0_cslc_binv_q;
 // ####################################################
 
 // Directory State for Way A
-generate begin : congr_cl_wA
+generate
+
       genvar                            cclassA;
       for (cclassA=0; cclassA<numCClass; cclassA=cclassA+1) begin : congr_cl_wA
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wA_reg(
@@ -2585,11 +2591,12 @@ generate begin : congr_cl_wA
             .dout(congr_cl_wA_q[cclassA])
          );
       end
-   end
+   
 endgenerate
 
 // Directory State for Way B
-generate begin : congr_cl_wB
+generate
+
       genvar                            cclassB;
       for (cclassB=0; cclassB<numCClass; cclassB=cclassB+1) begin : congr_cl_wB
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wB_reg(
@@ -2611,11 +2618,12 @@ generate begin : congr_cl_wB
             .dout(congr_cl_wB_q[cclassB])
          );
       end
-   end
+   
 endgenerate
 
 // Directory State for Way C
-generate begin : congr_cl_wC
+generate
+
       genvar                            cclassC;
       for (cclassC=0; cclassC<numCClass; cclassC=cclassC+1) begin : congr_cl_wC
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wC_reg(
@@ -2637,11 +2645,12 @@ generate begin : congr_cl_wC
             .dout(congr_cl_wC_q[cclassC])
          );
       end
-   end
+   
 endgenerate
 
 // Directory State for Way D
-generate begin : congr_cl_wD
+generate
+
       genvar                            cclassD;
       for (cclassD=0; cclassD<numCClass; cclassD=cclassD+1) begin : congr_cl_wD
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wD_reg(
@@ -2663,11 +2672,12 @@ generate begin : congr_cl_wD
             .dout(congr_cl_wD_q[cclassD])
          );
       end
-   end
+   
 endgenerate
 
 // Directory State for Way E
-generate begin : congr_cl_wE
+generate
+
       genvar                            cclassE;
       for (cclassE=0; cclassE<numCClass; cclassE=cclassE+1) begin : congr_cl_wE
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wE_reg(
@@ -2689,11 +2699,12 @@ generate begin : congr_cl_wE
             .dout(congr_cl_wE_q[cclassE])
          );
       end
-   end
+   
 endgenerate
 
 // Directory State for Way F
-generate begin : congr_cl_wF
+generate
+
       genvar                            cclassF;
       for (cclassF=0; cclassF<numCClass; cclassF=cclassF+1) begin : congr_cl_wF
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wF_reg(
@@ -2715,11 +2726,12 @@ generate begin : congr_cl_wF
             .dout(congr_cl_wF_q[cclassF])
          );
       end
-   end
+   
 endgenerate
 
 // Directory State for Way G
-generate begin : congr_cl_wG
+generate
+
       genvar                            cclassG;
       for (cclassG=0; cclassG<numCClass; cclassG=cclassG+1) begin : congr_cl_wG
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wG_reg(
@@ -2741,11 +2753,12 @@ generate begin : congr_cl_wG
             .dout(congr_cl_wG_q[cclassG])
          );
       end
-   end
+   
 endgenerate
 
 // Directory State for Way H
-generate begin : congr_cl_wH
+generate
+
       genvar                            cclassH;
       for (cclassH=0; cclassH<numCClass; cclassH=cclassH+1) begin : congr_cl_wH
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) congr_cl_wH_reg(
@@ -2767,7 +2780,7 @@ generate begin : congr_cl_wH
             .dout(congr_cl_wH_q[cclassH])
          );
       end
-   end
+   
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(numCClass), .INIT(0), .NEEDS_SRESET(1)) p0_congr_cl_act_reg(
@@ -2808,7 +2821,8 @@ tri_rlmreg_p #(.WIDTH(numCClass), .INIT(0), .NEEDS_SRESET(1)) p1_congr_cl_act_re
    .dout(p1_congr_cl_act_q)
 );
 
-generate begin : ex4_way_val
+generate
+
       genvar                            ways0;
       for (ways0=0; ways0<numWays; ways0=ways0+1) begin : ex4_way_val
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) ex4_way_val_reg(
@@ -2830,10 +2844,11 @@ generate begin : ex4_way_val
             .dout(ex4_way_val_q[ways0])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ex5_way_val
+generate
+
       genvar                            ways1;
       for (ways1=0; ways1<numWays; ways1=ways1+1) begin : ex5_way_val
          tri_regk #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) ex5_way_val_reg(
@@ -2855,7 +2870,7 @@ generate begin : ex5_way_val
             .dout(ex5_way_val_q[ways1])
          );
       end
-   end
+   
 endgenerate
 
 tri_regk #(.WIDTH(numWays), .INIT(0), .NEEDS_SRESET(1)) ex5_clr_lck_way_reg(
@@ -2934,7 +2949,8 @@ tri_regk #(.WIDTH(numWays), .INIT(0), .NEEDS_SRESET(1)) ex7_way_upd_reg(
    .dout(ex7_way_upd_q)
 );
 
-generate begin : ex5_dir_way
+generate
+
       genvar                            ways2;
       for (ways2=0; ways2<numWays; ways2=ways2+1) begin : ex5_dir_way
          tri_regk #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) ex5_dir_way_reg(
@@ -2956,10 +2972,11 @@ generate begin : ex5_dir_way
             .dout(ex5_dir_way_q[ways2])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ex6_dir_way
+generate
+
       genvar                            ways3;
       for (ways3=0; ways3<numWays; ways3=ways3+1) begin : ex6_dir_way
          tri_rlmreg_p #(.WIDTH(2 + `THREADS), .INIT(0), .NEEDS_SRESET(1)) ex6_dir_way_reg(
@@ -2981,10 +2998,11 @@ generate begin : ex6_dir_way
             .dout(ex6_dir_way_q[ways3])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : ex7_dir_way
+generate
+
       genvar                            ways4;
       for (ways4=0; ways4<numWays; ways4=ways4+1) begin : ex7_dir_way
          tri_regk #(.WIDTH(dirState-2), .INIT(0), .NEEDS_SRESET(1)) ex7_dir_way_reg(
@@ -3006,10 +3024,11 @@ generate begin : ex7_dir_way
             .dout(ex7_dir_way_q[ways4])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : stq3_way_val
+generate
+
       genvar                            ways5;
       for (ways5=0; ways5<numWays; ways5=ways5+1) begin : stq3_way_val
          tri_regk #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) stq3_way_val_reg(
@@ -3031,10 +3050,11 @@ generate begin : stq3_way_val
             .dout(stq3_way_val_q[ways5])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : stq4_way_val
+generate
+
       genvar                            ways6;
       for (ways6=0; ways6<numWays; ways6=ways6+1) begin : stq4_way_val
          tri_rlmreg_p #(.WIDTH(dirState-2), .INIT(0), .NEEDS_SRESET(1)) stq4_way_val_reg(
@@ -3056,10 +3076,11 @@ generate begin : stq4_way_val
             .dout(stq4_way_val_q[ways6])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : stq4_dir_way
+generate
+
       genvar                            ways7;
       for (ways7=0; ways7<numWays; ways7=ways7+1) begin : stq4_dir_way
          tri_rlmreg_p #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) stq4_dir_way_reg(
@@ -3081,10 +3102,11 @@ generate begin : stq4_dir_way
             .dout(stq4_dir_way_q[ways7])
          );
       end
-   end
+   
 endgenerate
 
-generate begin : stq5_dir_way
+generate
+
       genvar                            ways8;
       for (ways8=0; ways8<numWays; ways8=ways8+1) begin : stq5_dir_way
          tri_regk #(.WIDTH(dirState), .INIT(0), .NEEDS_SRESET(1)) stq5_dir_way_reg(
@@ -3106,7 +3128,7 @@ generate begin : stq5_dir_way
             .dout(stq5_dir_way_q[ways8])
          );
       end
-   end
+   
 endgenerate
 
 tri_rlmreg_p #(.WIDTH(numWays), .INIT(0), .NEEDS_SRESET(1)) stq3_ex6_ldp_err_reg(
